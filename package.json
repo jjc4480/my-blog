@@ -1,0 +1,39 @@
+{
+  "name": "my-blog",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-cloudflare": "^7.0.0",
+    "@sveltejs/kit": "^2.57.0",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@tailwindcss/postcss": "^4.2.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "autoprefixer": "^10.4.21",
+    "bits-ui": "^2.17.3",
+    "clsx": "^2.1.1",
+    "lucide-svelte": "^1.0.1",
+    "mdsvex": "^0.12.5",
+    "postcss": "^8.5.3",
+    "shiki": "^3.4.2",
+    "svelte": "^5.55.2",
+    "svelte-check": "^4.4.6",
+    "tailwind-merge": "^3.5.0",
+    "tailwind-variants": "^3.2.2",
+    "tailwindcss": "^4.1.4",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.7"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "flexsearch": "^0.7.43",
+    "satori": "^0.12.2"
+  }
+}
