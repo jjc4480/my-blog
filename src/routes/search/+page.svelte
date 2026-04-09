@@ -2,7 +2,7 @@
 	import type { Post } from '$lib/content/types';
 	import SearchInput from '$lib/components/common/SearchInput.svelte';
 	import PostList from '$lib/components/post/PostList.svelte';
-	import { siteConfig } from '$lib/config';
+	import SEO from '$lib/components/common/SEO.svelte';
 
 	let { data } = $props();
 	let query = $state('');
@@ -20,9 +20,7 @@
 	});
 </script>
 
-<svelte:head>
-	<title>검색 — {siteConfig.title}</title>
-</svelte:head>
+<SEO title="검색" description="포스트 검색" noindex={true} />
 
 <section>
 	<h1 class="text-2xl font-bold tracking-tight">검색</h1>

@@ -1,6 +1,9 @@
 <script lang="ts">
 	import TagChip from '$lib/components/common/TagChip.svelte';
+	import SEO from '$lib/components/common/SEO.svelte';
+	import JsonLD from '$lib/components/common/JsonLD.svelte';
 	import { siteConfig } from '$lib/config';
+	import { buildArticleSchema } from '$lib/seo';
 
 	let { data } = $props();
 
@@ -8,12 +11,29 @@
 		const d = new Date(dateStr);
 		return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 	}
+
+	const articleSchema = $derived(buildArticleSchema({
+		title: data.title,
+		description: data.description,
+		url: `${siteConfig.url}/blog/${data.slug}`,
+		publishedTime: data.date,
+		ogImage: `/og/${data.slug}.png`,
+		tags: data.tags
+	}));
+
+	const Content = data.Content;
 </script>
 
-<svelte:head>
-	<title>{data.title} — {siteConfig.title}</title>
-	<meta name="description" content={data.description} />
-</svelte:head>
+<SEO
+	title={data.title}
+	description={data.description}
+	type="article"
+	publishedTime={data.date}
+	tags={data.tags}
+	ogImage="/og/{data.slug}.png"
+	canonicalUrl="{siteConfig.url}/blog/{data.slug}"
+/>
+<JsonLD schema={articleSchema} />
 
 <article>
 	<header class="mb-10">
@@ -31,6 +51,6 @@
 	</header>
 
 	<div class="prose prose-neutral dark:prose-invert max-w-none leading-[1.8] [&>pre]:max-w-[50rem] [&>pre]:mx-auto">
-		{@html data.content}
+		<Content />
 	</div>
 </article>

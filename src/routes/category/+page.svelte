@@ -1,12 +1,20 @@
 <script lang="ts">
+	import SEO from '$lib/components/common/SEO.svelte';
+	import JsonLD from '$lib/components/common/JsonLD.svelte';
 	import { siteConfig } from '$lib/config';
+	import { buildCollectionPageSchema } from '$lib/seo';
 
 	let { data } = $props();
+
+	const schema = buildCollectionPageSchema({
+		title: '카테고리',
+		description: '모든 카테고리 목록',
+		url: `${siteConfig.url}/category`
+	});
 </script>
 
-<svelte:head>
-	<title>카테고리 — {siteConfig.title}</title>
-</svelte:head>
+<SEO title="카테고리" description="모든 카테고리 목록" />
+<JsonLD {schema} />
 
 <section>
 	<h1 class="text-2xl font-bold tracking-tight">카테고리</h1>

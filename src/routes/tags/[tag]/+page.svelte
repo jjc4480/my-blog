@@ -1,13 +1,21 @@
 <script lang="ts">
 	import PostList from '$lib/components/post/PostList.svelte';
+	import SEO from '$lib/components/common/SEO.svelte';
+	import JsonLD from '$lib/components/common/JsonLD.svelte';
 	import { siteConfig } from '$lib/config';
+	import { buildCollectionPageSchema } from '$lib/seo';
 
 	let { data } = $props();
+
+	const schema = $derived(buildCollectionPageSchema({
+		title: `#${data.tag}`,
+		description: `${data.tag} 태그의 포스트`,
+		url: `${siteConfig.url}/tags/${data.tag}`
+	}));
 </script>
 
-<svelte:head>
-	<title>#{data.tag} — {siteConfig.title}</title>
-</svelte:head>
+<SEO title="#{data.tag}" description="{data.tag} 태그의 포스트" />
+<JsonLD {schema} />
 
 <section>
 	<h1 class="text-2xl font-bold tracking-tight">
