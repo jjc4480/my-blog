@@ -1,10 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="text-scale" content="scale" />
+
+		<!-- Pretendard 폰트 프리로드 -->
+		<link
+			rel="preload"
+			href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+		/>
+		<noscript>
+			<link
+				rel="stylesheet"
+				href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+			/>
+		</noscript>
+
 		%sveltekit.head%
+
+		<!-- Cloudflare Web Analytics -->
+		<!-- Replace CF_ANALYTICS_TOKEN with your actual token from Cloudflare dashboard -->
+		<!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "CF_ANALYTICS_TOKEN"}'></script> -->
+
+		<!-- Google Ads (AdSense) -->
+		<!-- Replace ADSENSE_CLIENT_ID with your actual client ID -->
+		<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ADSENSE_CLIENT_ID" crossorigin="anonymous"></script> -->
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
