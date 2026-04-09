@@ -1,12 +1,18 @@
 <script lang="ts">
-	import SEO from '$lib/components/common/SEO.svelte';
-	import JsonLD from '$lib/components/common/JsonLD.svelte';
-	import { buildWebSiteSchema } from '$lib/seo';
-	import { SITE_CONFIG } from '$lib/config';
+	import PostList from '$lib/components/post/PostList.svelte';
+	import Pagination from '$lib/components/common/Pagination.svelte';
+	import { siteConfig } from '$lib/config';
+
+	let { data } = $props();
 </script>
 
-<SEO />
-<JsonLD schema={buildWebSiteSchema()} />
+<svelte:head>
+	<title>{siteConfig.title}</title>
+	<meta name="description" content={siteConfig.description} />
+</svelte:head>
 
-<h1 class="text-3xl font-bold">{SITE_CONFIG.title}</h1>
-<p class="mt-4 text-lg text-gray-600">{SITE_CONFIG.description}</p>
+<section>
+	<h1 class="text-2xl font-bold tracking-tight">포스트</h1>
+	<PostList posts={data.posts} />
+	<Pagination currentPage={data.currentPage} totalPages={data.totalPages} />
+</section>
