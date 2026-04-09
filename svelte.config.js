@@ -7,7 +7,11 @@ const config = {
 	extensions: ['.svelte', '.md'],
 	preprocess: [vitePreprocess(), mdsvex({ extensions: ['.md'] })],
 	compilerOptions: {
-		runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true)
+		runes: ({ filename }) => {
+			if (filename?.split(/[/\\]/).includes('node_modules')) return undefined;
+			if (filename?.endsWith('.md')) return false;
+			return true;
+		}
 	},
 	kit: {
 		adapter: adapter({
