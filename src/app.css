@@ -83,3 +83,35 @@
 	--radius-lg: calc(var(--radius) + 2px);
 	--radius-xl: calc(var(--radius) + 6px);
 }
+
+/* Code block styling */
+.prose pre {
+	@apply rounded-lg border border-border/50 text-sm leading-relaxed;
+	padding: 1.25rem 1.5rem;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.prose :not(pre) > code {
+	@apply rounded-md bg-secondary px-1.5 py-0.5 text-[0.85em] font-medium text-foreground;
+}
+
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+	content: none;
+}
+
+/* Code blocks wider than prose body */
+.prose pre {
+	max-width: 50rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+@media (min-width: 768px) {
+	.prose pre {
+		margin-left: -1rem;
+		margin-right: -1rem;
+		max-width: calc(100% + 2rem);
+	}
+}

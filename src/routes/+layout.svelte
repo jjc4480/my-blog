@@ -16,7 +16,7 @@
 
 <div class="flex min-h-screen flex-col">
 	<Header />
-	<main class="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+	<main class="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
 		{@render children()}
 	</main>
 	<Footer />

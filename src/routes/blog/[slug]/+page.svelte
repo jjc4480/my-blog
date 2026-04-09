@@ -42,7 +42,7 @@
 			<span>·</span>
 			<a href="/category/{data.category}" class="hover:text-foreground transition-colors">{data.category}</a>
 		</div>
-		<h1 class="text-3xl font-bold leading-tight tracking-tight">{data.title}</h1>
+		<h1 class="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{data.title}</h1>
 		<div class="mt-4 flex flex-wrap gap-1.5">
 			{#each data.tags as tag}
 				<TagChip {tag} href="/tags/{tag}" />
@@ -50,7 +50,7 @@
 		</div>
 	</header>
 
-	<div class="prose prose-neutral dark:prose-invert max-w-none leading-[1.8] [&>pre]:max-w-[50rem] [&>pre]:mx-auto">
+	<div class="prose prose-neutral dark:prose-invert max-w-none leading-[1.8]">
 		<Content />
 	</div>
 </article>

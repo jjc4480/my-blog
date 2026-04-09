@@ -12,15 +12,13 @@
 
 <article class="group py-6">
 	<a href="/blog/{post.slug}" class="block">
-		<div class="flex items-baseline justify-between gap-4">
-			<h2 class="text-lg font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
-				{post.title}
-			</h2>
-			<time class="shrink-0 text-sm text-muted-foreground tabular-nums" datetime={post.date}>
-				{formatDate(post.date)}
-			</time>
-		</div>
-		<p class="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">
+		<time class="text-xs text-muted-foreground tabular-nums sm:text-sm" datetime={post.date}>
+			{formatDate(post.date)}
+		</time>
+		<h2 class="mt-1 text-base font-semibold text-foreground group-hover:text-primary transition-colors leading-snug sm:text-lg">
+			{post.title}
+		</h2>
+		<p class="mt-1.5 text-sm text-muted-foreground leading-relaxed line-clamp-2">
 			{post.description}
 		</p>
 	</a>
