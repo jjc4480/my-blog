@@ -31,6 +31,13 @@
 			e.preventDefault();
 			searchOpen = !searchOpen;
 		}
+		if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+			const tag = (e.target as HTMLElement)?.tagName;
+			if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !(e.target as HTMLElement)?.isContentEditable) {
+				e.preventDefault();
+				searchOpen = true;
+			}
+		}
 	}
 </script>
 
