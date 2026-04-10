@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { browser } from '$app/environment';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import { siteConfig } from '$lib/config';
 
@@ -20,39 +21,54 @@
 	function closeMobile() {
 		mobileOpen = false;
 	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape' && mobileOpen) {
+			closeMobile();
+		}
+	}
 </script>
 
-<header class="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-	<div class="mx-auto flex h-14 max-w-3xl items-center justify-between px-6">
+<svelte:window onkeydown={handleKeydown} />
+
+<!-- Desktop sidebar -->
+<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-56 lg:flex-col lg:border-r lg:border-border/50 lg:bg-background">
+	<div class="flex flex-1 flex-col gap-6 px-5 py-8">
 		<a href="/" class="text-lg font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
 			{siteConfig.title}
 		</a>
-
-		<!-- Desktop nav -->
-		<nav class="hidden items-center gap-1 md:flex">
+		<nav class="flex flex-1 flex-col gap-0.5" aria-label="메인 네비게이션">
 			{#each navItems as { href, label }}
 				<a
 					{href}
-					class="rounded-md px-3 py-1.5 text-sm transition-colors {isActive(href)
+					class="rounded-md px-3 py-2 text-sm transition-colors {isActive(href)
 						? 'text-foreground font-medium bg-secondary/60'
 						: 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'}"
 				>
 					{label}
 				</a>
 			{/each}
-			<div class="ml-2">
-				<ThemeToggle />
-			</div>
 		</nav>
+		<div class="border-t border-border/50 pt-4">
+			<ThemeToggle />
+		</div>
+	</div>
+</aside>
 
-		<!-- Mobile: theme toggle + hamburger -->
-		<div class="flex items-center gap-2 md:hidden">
+<!-- Mobile top bar -->
+<header class="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg lg:hidden">
+	<div class="flex h-14 items-center justify-between px-4 sm:px-6">
+		<a href="/" class="text-lg font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
+			{siteConfig.title}
+		</a>
+		<div class="flex items-center gap-2">
 			<ThemeToggle />
 			<button
 				onclick={() => mobileOpen = !mobileOpen}
 				class="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
-				aria-label="메뉴 열기"
+				aria-label={mobileOpen ? '메뉴 닫기' : '메뉴 열기'}
 				aria-expanded={mobileOpen}
+				aria-controls="mobile-nav"
 			>
 				{#if mobileOpen}
 					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -63,9 +79,8 @@
 		</div>
 	</div>
 
-	<!-- Mobile menu -->
 	{#if mobileOpen}
-		<nav class="border-t border-border/50 bg-background px-6 pb-4 pt-2 md:hidden">
+		<nav id="mobile-nav" class="border-t border-border/50 bg-background px-4 pb-4 pt-2 sm:px-6" aria-label="모바일 네비게이션">
 			{#each navItems as { href, label }}
 				<a
 					{href}

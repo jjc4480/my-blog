@@ -5,6 +5,19 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
+		<!-- Theme init — prevents FOUC -->
+		<script>
+			(function() {
+				var t = localStorage.getItem('theme');
+				if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+					document.documentElement.classList.add('dark');
+				}
+			})();
+		</script>
+
+		<!-- RSS discovery -->
+		<link rel="alternate" type="application/rss+xml" title="블로그 RSS" href="/rss.xml" />
+
 		<!-- Pretendard 폰트 프리로드 -->
 		<link
 			rel="preload"
@@ -22,11 +35,9 @@
 		%sveltekit.head%
 
 		<!-- Cloudflare Web Analytics -->
-		<!-- Replace CF_ANALYTICS_TOKEN with your actual token from Cloudflare dashboard -->
 		<!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "CF_ANALYTICS_TOKEN"}'></script> -->
 
 		<!-- Google Ads (AdSense) -->
-		<!-- Replace ADSENSE_CLIENT_ID with your actual client ID -->
 		<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ADSENSE_CLIENT_ID" crossorigin="anonymous"></script> -->
 	</head>
 	<body data-sveltekit-preload-data="hover">

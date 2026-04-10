@@ -173,3 +173,14 @@
 		max-width: calc(100% + 2rem);
 	}
 }
+
+/* Focus-visible accessibility */
+:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 2px;
+	border-radius: var(--radius);
+}
+
+:focus:not(:focus-visible) {
+	outline: none;
+}
