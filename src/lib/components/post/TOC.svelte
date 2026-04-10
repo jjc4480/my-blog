@@ -11,7 +11,7 @@
 	let activeId = $state('');
 	let tocOpen = $state(false);
 
-	if (browser && headings.length > 0) {
+	if (browser) {
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
@@ -23,8 +23,8 @@
 			{ rootMargin: '-80px 0px -60% 0px', threshold: 0 }
 		);
 
-		// Use $effect for cleanup
 		$effect(() => {
+			if (headings.length === 0) return;
 			const els = headings.map((h) => document.getElementById(h.id)).filter(Boolean) as HTMLElement[];
 			els.forEach((el) => observer.observe(el));
 			return () => els.forEach((el) => observer.unobserve(el));
@@ -33,8 +33,8 @@
 </script>
 
 {#if headings.length > 0}
-	<!-- Mobile: collapsible -->
-	<div class="mb-8 rounded-lg border border-border/50 bg-card p-4 lg:hidden">
+	<!-- Mobile/tablet: collapsible inside content flow -->
+	<div class="mb-8 rounded-lg border border-border/50 bg-card p-4 xl:hidden">
 		<button
 			onclick={() => tocOpen = !tocOpen}
 			class="flex w-full items-center justify-between text-sm font-medium text-foreground"
@@ -68,22 +68,24 @@
 		{/if}
 	</div>
 
-	<!-- Desktop: sticky sidebar -->
-	<nav class="hidden lg:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto" aria-label="목차">
-		<p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">목차</p>
-		<ul class="space-y-1 border-l border-border/50">
-			{#each headings as heading}
-				<li style="padding-left: {(heading.level - 2) * 0.75 + 0.75}rem">
-					<a
-						href="#{heading.id}"
-						class="block -ml-px border-l-2 py-1 pl-3 text-sm leading-relaxed transition-colors {activeId === heading.id
-							? 'border-primary text-primary font-medium'
-							: 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'}"
-					>
-						{heading.text}
-					</a>
-				</li>
-			{/each}
-		</ul>
-	</nav>
+	<!-- Desktop xl+: fixed right sidebar, outside content flow -->
+	<aside class="fixed top-24 right-8 hidden w-48 max-h-[calc(100vh-8rem)] overflow-y-auto xl:block">
+		<nav aria-label="목차">
+			<p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">목차</p>
+			<ul class="space-y-1 border-l border-border/50">
+				{#each headings as heading}
+					<li style="padding-left: {(heading.level - 2) * 0.75 + 0.75}rem">
+						<a
+							href="#{heading.id}"
+							class="block -ml-px border-l-2 py-1 pl-3 text-[13px] leading-relaxed transition-colors {activeId === heading.id
+								? 'border-primary text-primary font-medium'
+								: 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'}"
+						>
+							{heading.text}
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</nav>
+	</aside>
 {/if}
