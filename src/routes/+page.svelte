@@ -17,7 +17,8 @@
 <!-- Hero -->
 <section class="mb-12">
 	<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{siteConfig.title}</h1>
-	<p class="mt-2 text-lg text-muted-foreground">{siteConfig.description}</p>
+	<p class="mt-3 text-base text-muted-foreground leading-relaxed">{siteConfig.author.bio}</p>
+	<p class="mt-1 text-sm text-muted-foreground/70">{siteConfig.description}</p>
 </section>
 
 <!-- Filter -->

@@ -2,16 +2,16 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import ThemeToggle from './ThemeToggle.svelte';
+	import SearchModal from '$lib/components/common/SearchModal.svelte';
 	import { siteConfig } from '$lib/config';
 
 	let mobileOpen = $state(false);
+	let searchOpen = $state(false);
 
 	const navItems = [
 		{ href: '/', label: '홈' },
 		{ href: '/tags', label: '태그' },
-		{ href: '/category', label: '카테고리' },
-		{ href: '/search', label: '검색' },
-		{ href: '/about', label: '소개' }
+		{ href: '/category', label: '카테고리' }
 	];
 
 	function isActive(href: string): boolean {
@@ -27,6 +27,10 @@
 		if (e.key === 'Escape' && mobileOpen) {
 			closeMobile();
 		}
+		if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+			e.preventDefault();
+			searchOpen = !searchOpen;
+		}
 	}
 </script>
 
@@ -38,6 +42,17 @@
 		<a href="/" class="text-lg font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
 			{siteConfig.title}
 		</a>
+
+		<!-- Search button -->
+		<button
+			onclick={() => searchOpen = true}
+			class="flex items-center gap-2 rounded-md border border-border/50 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:border-border"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			<span class="flex-1 text-left">검색</span>
+			<kbd class="rounded border border-border/50 px-1 py-0.5 text-[10px]">⌘K</kbd>
+		</button>
+
 		<nav class="flex flex-1 flex-col gap-0.5" aria-label="메인 네비게이션">
 			{#each navItems as { href, label }}
 				<a
@@ -62,7 +77,14 @@
 		<a href="/" class="text-lg font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
 			{siteConfig.title}
 		</a>
-		<div class="flex items-center gap-2">
+		<div class="flex items-center gap-1">
+			<button
+				onclick={() => searchOpen = true}
+				class="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
+				aria-label="검색"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			</button>
 			<ThemeToggle />
 			<button
 				onclick={() => mobileOpen = !mobileOpen}
@@ -96,3 +118,5 @@
 		</nav>
 	{/if}
 </header>
+
+<SearchModal bind:open={searchOpen} />
