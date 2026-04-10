@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { value = $bindable(''), placeholder = '검색...' }: { value?: string; placeholder?: string } = $props();
+	let { value = $bindable(''), placeholder = '검색...', oninput }: { value?: string; placeholder?: string; oninput?: () => void } = $props();
 </script>
 
 <div class="relative">
@@ -21,6 +21,7 @@
 		type="text"
 		bind:value
 		{placeholder}
+		{oninput}
 		class="w-full rounded-md border border-input bg-background py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
 	/>
 </div>
