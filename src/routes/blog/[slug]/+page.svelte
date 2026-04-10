@@ -31,17 +31,23 @@
 	// Extract headings from DOM after render
 	$effect(() => {
 		if (!browser) return;
-		const article = document.querySelector('article .prose');
-		if (!article) return;
-		const els = article.querySelectorAll('h2, h3');
-		const items: TocItem[] = [];
-		els.forEach((el) => {
-			if (!el.id) {
-				el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-').replace(/^-|-$/g, '') ?? '';
-			}
-			items.push({ id: el.id, text: el.textContent?.trim() ?? '', level: parseInt(el.tagName[1]) });
+		// Track slug + Content to re-run when navigating between posts
+		void data.slug;
+		void Content;
+		// Wait for DOM to update with new content
+		requestAnimationFrame(() => {
+			const article = document.querySelector('article .prose');
+			if (!article) return;
+			const els = article.querySelectorAll('h2, h3');
+			const items: TocItem[] = [];
+			els.forEach((el) => {
+				if (!el.id) {
+					el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-').replace(/^-|-$/g, '') ?? '';
+				}
+				items.push({ id: el.id, text: el.textContent?.trim() ?? '', level: parseInt(el.tagName[1]) });
+			});
+			headings = items;
 		});
-		headings = items;
 	});
 </script>
 
