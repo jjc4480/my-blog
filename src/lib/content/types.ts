@@ -8,4 +8,5 @@ export interface Post {
 	published?: boolean;
 	slug: string;
 	content: string;
+	readingTime?: number;
 }

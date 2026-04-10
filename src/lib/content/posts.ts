@@ -1,7 +1,9 @@
 import type { Post } from './types';
+import { getReadingTime } from './reading-time';
 
 export async function getPosts(): Promise<Post[]> {
 	const modules = import.meta.glob('/content/posts/*.md', { eager: true });
+	const rawModules = import.meta.glob('/content/posts/*.md', { query: '?raw', eager: true, import: 'default' });
 	const posts: Post[] = [];
 
 	for (const [path, module] of Object.entries(modules)) {
@@ -11,10 +13,13 @@ export async function getPosts(): Promise<Post[]> {
 
 		if (metadata.published === false) continue;
 
+		const rawContent = (rawModules[path] as string) ?? '';
+
 		posts.push({
 			...metadata,
 			slug,
-			content: ''
+			content: '',
+			readingTime: getReadingTime(rawContent)
 		});
 	}
 

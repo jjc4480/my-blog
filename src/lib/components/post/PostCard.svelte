@@ -12,9 +12,13 @@
 
 <article class="group py-6">
 	<a href="/blog/{post.slug}" class="block">
-		<time class="text-xs text-muted-foreground tabular-nums sm:text-sm" datetime={post.date}>
-			{formatDate(post.date)}
-		</time>
+		<div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground tabular-nums sm:text-sm">
+			<time datetime={post.date}>{formatDate(post.date)}</time>
+			{#if post.readingTime}
+				<span>·</span>
+				<span>{post.readingTime}분 읽기</span>
+			{/if}
+		</div>
 		<h2 class="mt-1 text-base font-semibold text-foreground group-hover:text-primary transition-colors leading-snug sm:text-lg">
 			{post.title}
 		</h2>
