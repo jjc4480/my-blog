@@ -9,9 +9,6 @@ tags:
 category: frontend
 published: true
 ---
-
-# Tailwind CSS v4로 마이그레이션한 경험
-
 Tailwind CSS v4가 정식 릴리스되면서 프로젝트를 마이그레이션했다. 가장 큰 변화는 설정 방식이다.
 
 ## 설정 파일이 사라졌다

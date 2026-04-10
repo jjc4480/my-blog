@@ -7,7 +7,4 @@ tags:
 category: general
 published: true
 ---
-
-# Hello World
-
 블로그의 첫 번째 포스트입니다.

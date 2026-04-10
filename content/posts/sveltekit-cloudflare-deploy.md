@@ -5,12 +5,9 @@ description: adapter-cloudflare 배포 가이드
 tags: [sveltekit, cloudflare]
 category: infrastructure
 ---
-# SvelteKit Cloudflare 배포
-
-# adapter-cloudflare로 SvelteKit을 배포한다.
+adapter-cloudflare로 SvelteKit을 배포한다.
 
 ## 주의점
 
--   Workers는 V8 기반, Node.js API 불가
-    
--   환경변수는 platform.env로 접근
+- Workers는 V8 기반, Node.js API 불가
+- 환경변수는 platform.env로 접근
