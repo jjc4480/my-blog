@@ -12,22 +12,40 @@
 	let tocOpen = $state(false);
 
 	if (browser) {
+		// Track which headings are currently visible
+		let visibleIds = new Set<string>();
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
-						activeId = entry.target.id;
+						visibleIds.add(entry.target.id);
+					} else {
+						visibleIds.delete(entry.target.id);
+					}
+				}
+				// Pick the first visible heading in document order
+				if (headings.length > 0) {
+					for (const h of headings) {
+						if (visibleIds.has(h.id)) {
+							activeId = h.id;
+							return;
+						}
 					}
 				}
 			},
-			{ rootMargin: '-80px 0px -60% 0px', threshold: 0 }
+			{ rootMargin: '0px 0px -70% 0px', threshold: 0 }
 		);
 
 		$effect(() => {
 			if (headings.length === 0) return;
+			visibleIds.clear();
 			const els = headings.map((h) => document.getElementById(h.id)).filter(Boolean) as HTMLElement[];
 			els.forEach((el) => observer.observe(el));
-			return () => els.forEach((el) => observer.unobserve(el));
+			return () => {
+				els.forEach((el) => observer.unobserve(el));
+				visibleIds.clear();
+			};
 		});
 	}
 </script>
