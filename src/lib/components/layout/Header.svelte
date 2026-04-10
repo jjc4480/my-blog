@@ -10,7 +10,8 @@
 		{ href: '/', label: '홈' },
 		{ href: '/tags', label: '태그' },
 		{ href: '/category', label: '카테고리' },
-		{ href: '/search', label: '검색' }
+		{ href: '/search', label: '검색' },
+		{ href: '/about', label: '소개' }
 	];
 
 	function isActive(href: string): boolean {

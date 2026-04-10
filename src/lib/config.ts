@@ -4,7 +4,12 @@ export const siteConfig = {
 	url: 'https://blog.jcjang.dev',
 	author: {
 		name: 'jcjang',
+		bio: '풀스택 개발자. 웹 기술과 시스템 설계에 관심이 많습니다.',
 		twitter: '@jcjang'
+	},
+	social: {
+		github: 'https://github.com/jcjang',
+		twitter: 'https://twitter.com/jcjang'
 	},
 	defaultOgImage: '/og-default.png',
 	locale: 'ko_KR',
