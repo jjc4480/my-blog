@@ -26,7 +26,7 @@
 		tags: data.tags
 	}));
 
-	const Content = data.Content;
+	const Content = $derived(data.Content);
 
 	// Extract headings from DOM after render
 	$effect(() => {
