@@ -87,7 +87,7 @@
 	<!-- Modal -->
 	<div
 		bind:this={modalEl}
-		class="fixed inset-x-4 top-1/2 z-[101] mx-auto max-w-lg -translate-y-1/2 rounded-xl border border-border bg-card shadow-2xl sm:inset-x-auto"
+		class="fixed left-1/2 top-1/2 z-[101] mx-4 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-card shadow-2xl"
 		onkeydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"

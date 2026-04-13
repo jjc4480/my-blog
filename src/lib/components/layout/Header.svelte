@@ -3,12 +3,10 @@
 	import { browser } from '$app/environment';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import SearchModal from '$lib/components/common/SearchModal.svelte';
-	import ShortcutsModal from '$lib/components/common/ShortcutsModal.svelte';
 	import { siteConfig } from '$lib/config';
 
 	let mobileOpen = $state(false);
 	let searchOpen = $state(false);
-	let shortcutsOpen = $state(false);
 
 	const navItems = [
 		{ href: '/', label: '홈' },
@@ -80,16 +78,7 @@
 				</a>
 			{/each}
 		</nav>
-		<div class="border-t border-border/50 pt-4 flex items-center justify-between">
-			<ThemeToggle />
-			<button
-				onclick={() => shortcutsOpen = true}
-				class="rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/40"
-				aria-label="단축키 도움말"
-			>
-				<kbd class="rounded border border-border/50 px-1.5 py-0.5 text-[10px]">?</kbd>
-			</button>
-		</div>
+
 	</div>
 </aside>
 
@@ -143,4 +132,3 @@
 </header>
 
 <SearchModal bind:open={searchOpen} />
-<ShortcutsModal bind:open={shortcutsOpen} />
