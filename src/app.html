@@ -12,6 +12,9 @@
 				if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
 					document.documentElement.classList.add('dark');
 				}
+				if (/Mac|iPhone|iPad|iPod/.test(navigator.platform)) {
+					document.documentElement.dataset.platform = 'mac';
+				}
 			})();
 		</script>
 

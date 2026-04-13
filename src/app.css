@@ -197,3 +197,9 @@
 .animate-fade-in {
 	animation: fade-in 0.3s ease-out;
 }
+
+/* Platform-adaptive shortcut keys — no JS flash */
+.mac-key { display: none; }
+.other-key { display: inline; }
+[data-platform="mac"] .mac-key { display: inline; }
+[data-platform="mac"] .other-key { display: none; }

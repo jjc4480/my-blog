@@ -8,10 +8,7 @@
 	let mobileOpen = $state(false);
 	let searchOpen = $state(false);
 
-	let modKey = $state('');
-	if (browser) {
-		modKey = navigator.platform.toUpperCase().includes('MAC') ? '⌘K' : 'Ctrl K';
-	}
+	
 
 	const navItems = [
 		{ href: '/', label: '홈' },
@@ -54,7 +51,7 @@
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 			<span class="flex-1 text-left">검색</span>
-			{#if modKey}<kbd class="rounded border border-border/50 px-1 py-0.5 text-[10px]">{modKey}</kbd>{/if}
+			<kbd class="rounded border border-border/50 px-1 py-0.5 text-[10px]"><span class="mac-key">⌘K</span><span class="other-key">Ctrl K</span></kbd>
 		</button>
 
 		<nav class="flex flex-1 flex-col gap-0.5" aria-label="메인 네비게이션">
