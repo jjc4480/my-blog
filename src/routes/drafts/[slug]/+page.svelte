@@ -2,43 +2,58 @@
 	import { goto } from '$app/navigation';
 	import { draftFetch } from '$lib/draft/api';
 	import { renderMarkdown } from '$lib/draft/markdown';
+	import { htmlToMarkdown } from '$lib/draft/html-to-markdown';
+	import TiptapEditor from '$lib/components/editor/TiptapEditor.svelte';
 
 	let { data } = $props();
 
-	let content = $state(data.content);
 	let sha = $state(data.sha);
-	let preview = $state('');
 	let saving = $state(false);
 	let publishing = $state(false);
 	let status = $state('');
-	let activeTab: 'edit' | 'preview' = $state('edit');
-	let debounceTimer: ReturnType<typeof setTimeout>;
+	let editorHtml = $state('');
+	let initialHtml = $state('');
+	let frontmatter = $state('');
+	let loaded = $state(false);
 
-	function isPublished(src: string): boolean {
-		const match = src.match(/published:\s*(true|false)/);
+	function parseFrontmatterAndBody(raw: string): { fm: string; body: string } {
+		const match = raw.match(/^(---\n[\s\S]*?\n---)\n?([\s\S]*)$/);
+		if (match) return { fm: match[1], body: match[2] };
+		return { fm: '', body: raw };
+	}
+
+	function isPublished(fm: string): boolean {
+		const match = fm.match(/published:\s*(true|false)/);
 		return match?.[1] === 'true';
 	}
 
-	function setPublished(src: string, val: boolean): string {
-		return src.replace(/published:\s*(true|false)/, `published: ${val}`);
-	}
-
-	function getBody(src: string): string {
-		const match = src.match(/^---\n[\s\S]*?\n---\n?([\s\S]*)$/);
-		return match?.[1] ?? src;
+	function setPublished(fm: string, val: boolean): string {
+		return fm.replace(/published:\s*(true|false)/, `published: ${val}`);
 	}
 
 	$effect(() => {
-		clearTimeout(debounceTimer);
-		const src = content;
-		debounceTimer = setTimeout(async () => {
-			preview = await renderMarkdown(getBody(src));
-		}, 300);
+		const { fm, body } = parseFrontmatterAndBody(data.content);
+		frontmatter = fm;
+		renderMarkdown(body).then((html) => {
+			initialHtml = html;
+			editorHtml = html;
+			loaded = true;
+		});
 	});
+
+	function handleEditorUpdate(html: string) {
+		editorHtml = html;
+	}
+
+	function buildContent(): string {
+		const md = htmlToMarkdown(editorHtml);
+		return frontmatter + '\n' + md;
+	}
 
 	async function save() {
 		saving = true;
 		status = '';
+		const content = buildContent();
 		const res = await draftFetch(`/api/drafts/${data.slug}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
@@ -48,40 +63,41 @@
 			const fresh = await draftFetch(`/api/drafts/${data.slug}`);
 			const d = await fresh.json();
 			sha = d.sha;
-			status = '저장됨';
+			status =  + "저장됨" + r;
 			setTimeout(() => { status = ''; }, 2000);
 		} else {
-			status = '저장 실패';
+			status =  + "저장 실패" + r;
 		}
 		saving = false;
 	}
 
 	async function publish() {
-		if (!confirm('게시하시겠습니까? 즉시 배포됩니다.')) return;
+		if (!confirm( + "게시하시겠습니까? 즉시 배포됩니다." + r)) return;
 		publishing = true;
-		content = setPublished(content, true);
+		frontmatter = setPublished(frontmatter, true);
+		const content = buildContent();
 		const res = await draftFetch(`/api/drafts/${data.slug}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ content, sha, publish: true })
 		});
 		if (res.ok) {
-			status = '게시 완료! 배포가 시작됩니다.';
+			status =  + "게시 완료! 배포가 시작됩니다." + r;
 			setTimeout(() => goto('/drafts'), 2000);
 		} else {
-			status = '게시 실패';
-			content = setPublished(content, false);
+			status =  + "게시 실패" + r;
+			frontmatter = setPublished(frontmatter, false);
 		}
 		publishing = false;
 	}
 
 	async function unpublish() {
-		content = setPublished(content, false);
+		frontmatter = setPublished(frontmatter, false);
 		await save();
 	}
 
 	async function deleteDraft() {
-		if (!confirm('이 초안을 삭제하시겠습니까?')) return;
+		if (!confirm( + "이 초안을 삭제하시겠습니까?" + r)) return;
 		await draftFetch(`/api/drafts/${data.slug}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
@@ -111,17 +127,16 @@
 	</div>
 	<div class="flex items-center gap-2">
 		<button onclick={save} disabled={saving} class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/40 transition-colors disabled:opacity-50">
-			{saving ? '저장 중...' : '저장'}
-			<kbd class="ml-1 text-[10px] text-muted-foreground mac-key">⌘S</kbd>
-			<kbd class="ml-1 text-[10px] text-muted-foreground other-key">Ctrl+S</kbd>
+			{saving ?  + "저장 중..." + r :  + "저장" + r}
+			<kbd class="ml-1 text-[10px] text-muted-foreground">⌘S</kbd>
 		</button>
-		{#if isPublished(content)}
+		{#if isPublished(frontmatter)}
 			<button onclick={unpublish} class="rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
 				게시 취소
 			</button>
 		{:else}
 			<button onclick={publish} disabled={publishing} class="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50">
-				{publishing ? '게시 중...' : '게시'}
+				{publishing ?  + "게시 중..." + r :  + "게시" + r}
 			</button>
 		{/if}
 		<button onclick={deleteDraft} class="rounded-md border border-destructive/30 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10 transition-colors">
@@ -130,35 +145,11 @@
 	</div>
 </div>
 
-<!-- Tabs -->
-<div class="flex border-b border-border/50 mb-0">
-	<button
-		onclick={() => activeTab = 'edit'}
-		class="px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px {activeTab === 'edit' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
-	>
-		마크다운
-	</button>
-	<button
-		onclick={() => activeTab = 'preview'}
-		class="px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px {activeTab === 'preview' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
-	>
-		미리보기
-	</button>
-</div>
-
-<!-- Content area -->
-<div class="h-[calc(100vh-11rem)] rounded-b-lg border border-t-0 border-border/50 overflow-hidden">
-	{#if activeTab === 'edit'}
-		<textarea
-			bind:value={content}
-			class="h-full w-full resize-none bg-background p-6 font-mono text-sm leading-relaxed text-foreground outline-none"
-			spellcheck="false"
-		></textarea>
+<!-- Editor -->
+<div class="h-[calc(100vh-11rem)]">
+	{#if loaded}
+		<TiptapEditor content={initialHtml} onUpdate={handleEditorUpdate} />
 	{:else}
-		<div class="h-full overflow-y-auto p-6">
-			<div class="prose prose-neutral dark:prose-invert max-w-none leading-[1.8]">
-				{@html preview}
-			</div>
-		</div>
+		<div class="flex h-full items-center justify-center text-sm text-muted-foreground">로딩...</div>
 	{/if}
 </div>
