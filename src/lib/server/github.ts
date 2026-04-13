@@ -19,6 +19,7 @@ function headers(token: string): Record<string, string> {
 	return {
 		Authorization: `Bearer ${token}`,
 		Accept: 'application/vnd.github+json',
+		'User-Agent': 'jcjang-blog',
 		'X-GitHub-Api-Version': API_VERSION
 	};
 }

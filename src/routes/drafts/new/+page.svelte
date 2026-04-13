@@ -1,86 +1,114 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { draftFetch } from '$lib/draft/api';
+	import TiptapEditor from '$lib/components/editor/TiptapEditor.svelte';
+	import { htmlToMarkdown } from '$lib/draft/html-to-markdown';
 
+	let slug = $state('');
 	let title = $state('');
 	let description = $state('');
 	let category = $state('');
 	let tagsInput = $state('');
 	let saving = $state(false);
 	let errorMsg = $state('');
+	let editorHtml = $state('');
 
-	const slug = $derived(
-		title
-			.trim()
-			.toLowerCase()
-			.replace(/[^a-z0-9\uac00-\ud7a3\s-]/g, '')
-			.replace(/\s+/g, '-')
-			.replace(/-+/g, '-')
-			.replace(/^-|-$/g, '')
-	);
+	function handleEditorUpdate(html: string) {
+		editorHtml = html;
+	}
 
-	async function createDraft() {
-		if (!title.trim() || !slug) return;
+	function buildFrontmatter(): string {
+		const date = new Date().toISOString().split('T')[0];
+		const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
+		const tagsStr = tags.length > 0 ? `[${tags.join(', ')}]` : '[]';
+		return `---\ntitle: "${title.trim()}"\ndate: ${date}\ndescription: "${description.trim()}"\ntags: ${tagsStr}\ncategory: ${category.trim()}\npublished: false\n---`;
+	}
+
+	async function saveDraft() {
+		if (!slug.trim() || !title.trim()) return;
 		saving = true;
 		errorMsg = '';
 		try {
-			const tags = tagsInput.split(',').map((t) => t.trim()).filter(Boolean);
+			const md = htmlToMarkdown(editorHtml);
+			const content = buildFrontmatter() + '\n' + md;
 			const res = await draftFetch('/api/drafts', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ title: title.trim(), slug, category: category.trim(), tags, description: description.trim() })
+				body: JSON.stringify({
+					title: title.trim(),
+					slug: slug.trim(),
+					category: category.trim(),
+					tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean),
+					description: description.trim(),
+					content
+				})
 			});
 			if (!res.ok) {
 				const data = await res.json();
 				errorMsg = data.error || '생성 실패';
 				return;
 			}
-			const data = await res.json();
-			goto(`/drafts/${data.slug}`);
+			goto(`/drafts/${slug.trim()}`);
 		} catch {
 			errorMsg = '네트워크 오류';
 		} finally {
 			saving = false;
 		}
 	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+			e.preventDefault();
+			saveDraft();
+		}
+	}
 </script>
 
-<div class="mx-auto max-w-lg">
-	<h1 class="mb-8 text-xl font-bold">새 초안 작성</h1>
+<svelte:window on:keydown={handleKeydown} />
 
-	<form onsubmit={(e) => { e.preventDefault(); createDraft(); }} class="space-y-5">
-		<div>
-			<label for="title" class="mb-1.5 block text-sm font-medium">제목</label>
-			<input id="title" type="text" bind:value={title} required class="w-full rounded-md border border-border/50 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-			{#if slug}
-				<p class="mt-1 text-xs text-muted-foreground">slug: {slug}</p>
-			{/if}
-		</div>
-
-		<div>
-			<label for="description" class="mb-1.5 block text-sm font-medium">설명</label>
-			<input id="description" type="text" bind:value={description} class="w-full rounded-md border border-border/50 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-		</div>
-
-		<div>
-			<label for="category" class="mb-1.5 block text-sm font-medium">카테고리</label>
-			<input id="category" type="text" bind:value={category} class="w-full rounded-md border border-border/50 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-		</div>
-
-		<div>
-			<label for="tags" class="mb-1.5 block text-sm font-medium">태그 (쉼표 구분)</label>
-			<input id="tags" type="text" bind:value={tagsInput} placeholder="svelte, typescript, blog" class="w-full rounded-md border border-border/50 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-		</div>
-
+<div class="mb-4 flex items-center justify-between">
+	<div class="flex items-center gap-3">
+		<a href="/drafts" class="text-sm text-muted-foreground hover:text-foreground transition-colors">← 목록</a>
+		<span class="text-sm font-medium">새 글 작성</span>
+	</div>
+	<div class="flex items-center gap-2">
 		{#if errorMsg}
-			<p class="text-sm text-destructive">{errorMsg}</p>
+			<span class="text-xs text-destructive">{errorMsg}</span>
 		{/if}
+		<button onclick={saveDraft} disabled={!slug.trim() || !title.trim() || saving} class="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50">
+			{saving ? '저장 중...' : '초안 저장'}
+			<kbd class="ml-1 text-[10px] text-primary-foreground/60">⌘S</kbd>
+		</button>
+	</div>
+</div>
 
-		<div class="flex gap-3">
-			<button type="submit" disabled={!title.trim() || saving} class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-				{saving ? '생성 중...' : '초안 생성'}
-			</button>
-			<a href="/drafts" class="rounded-md border border-border/50 px-4 py-2 text-sm transition-colors hover:bg-secondary">취소</a>
+<!-- Meta fields -->
+<div class="mb-4 grid gap-3 sm:grid-cols-2">
+	<div>
+		<label for="slug" class="mb-1 block text-xs text-muted-foreground">Slug (영문, URL 경로)</label>
+		<input id="slug" type="text" bind:value={slug} required placeholder="my-post-title" class="w-full rounded-md border border-border/50 bg-background px-3 py-1.5 text-sm font-mono outline-none focus:ring-2 focus:ring-ring" />
+	</div>
+	<div>
+		<label for="title" class="mb-1 block text-xs text-muted-foreground">제목</label>
+		<input id="title" type="text" bind:value={title} required placeholder="포스트 제목" class="w-full rounded-md border border-border/50 bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+	</div>
+	<div>
+		<label for="description" class="mb-1 block text-xs text-muted-foreground">설명</label>
+		<input id="description" type="text" bind:value={description} placeholder="간단한 설명" class="w-full rounded-md border border-border/50 bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+	</div>
+	<div class="grid grid-cols-2 gap-3">
+		<div>
+			<label for="category" class="mb-1 block text-xs text-muted-foreground">카테고리</label>
+			<input id="category" type="text" bind:value={category} placeholder="engineering" class="w-full rounded-md border border-border/50 bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
 		</div>
-	</form>
+		<div>
+			<label for="tags" class="mb-1 block text-xs text-muted-foreground">태그 (쉼표 구분)</label>
+			<input id="tags" type="text" bind:value={tagsInput} placeholder="go, msa" class="w-full rounded-md border border-border/50 bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+		</div>
+	</div>
+</div>
+
+<!-- Editor -->
+<div class="h-[calc(100vh-16rem)]">
+	<TiptapEditor content="" onUpdate={handleEditorUpdate} />
 </div>

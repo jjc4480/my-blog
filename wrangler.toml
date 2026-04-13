@@ -4,12 +4,4 @@ compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
 [vars]
-# 환경변수는 Cloudflare Pages 대시보드에서 설정
-# SITE_URL = "https://blog.jcjang.dev"
-
-# Draft Editor (GitHub OAuth + Contents API)
-# GITHUB_CLIENT_ID = "GitHub OAuth App Client ID"
-# GITHUB_CLIENT_SECRET = "GitHub OAuth App Client Secret"
-# GITHUB_REPO = "owner/repo"
-# ALLOWED_GITHUB_USER = "github-username"
-# SESSION_SECRET = "random-32+-char-string"
+# Secrets are set via wrangler pages secret or Cloudflare dashboard

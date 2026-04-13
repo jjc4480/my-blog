@@ -140,20 +140,25 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	const repo = getEnv(platform).GITHUB_REPO;
 	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
 
-	const { title, slug, category, tags, description } = await request.json();
+	const body = await request.json();
+	const { title, slug, content: rawContent } = body;
 	if (!title || !slug) return json({ error: 'title and slug required' }, { status: 400 });
 
-	const date = new Date().toISOString().split('T')[0];
-	const frontmatter = buildFrontmatter({
-		title,
-		date,
-		category: category ?? '',
-		tags: tags ?? [],
-		description: description ?? '',
-		published: false
-	});
-
-	const content = frontmatter + '\n';
+	let content: string;
+	if (rawContent) {
+		content = rawContent;
+	} else {
+		const date = new Date().toISOString().split('T')[0];
+		const frontmatter = buildFrontmatter({
+			title,
+			date,
+			category: body.category ?? '',
+			tags: body.tags ?? [],
+			description: body.description ?? '',
+			published: false
+		});
+		content = frontmatter + '\n';
+	}
 	await putPostFile(user.token, repo, slug, content, `draft: create ${slug}`);
 
 	return json({ slug }, { status: 201 });

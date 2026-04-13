@@ -5,7 +5,7 @@ export function getGitHubAuthUrl(clientId: string, redirectUri: string): string 
 	const params = new URLSearchParams({
 		client_id: clientId,
 		redirect_uri: redirectUri,
-		scope: 'repo'
+		scope: 'repo read:user'
 	});
 	return `https://github.com/login/oauth/authorize?${params}`;
 }
@@ -19,7 +19,8 @@ export async function exchangeCodeForToken(
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			Accept: 'application/json'
+			Accept: 'application/json',
+			'User-Agent': 'jcjang-blog'
 		},
 		body: JSON.stringify({
 			client_id: clientId,
@@ -45,12 +46,13 @@ export async function getGitHubUser(token: string): Promise<{ login: string }> {
 		headers: {
 			Authorization: `Bearer ${token}`,
 			Accept: 'application/vnd.github+json',
+			'User-Agent': 'jcjang-blog',
 			'X-GitHub-Api-Version': '2022-11-28'
 		}
 	});
 
 	if (!res.ok) {
-		throw new Error(`GitHub user fetch failed: ${res.status}`);
+		const body = await res.text(); throw new Error(`GitHub user fetch failed: ${res.status} ${body}`);
 	}
 
 	const data: { login: string } = await res.json();
