@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
 	import TagChip from '$lib/components/common/TagChip.svelte';
 	import SEO from '$lib/components/common/SEO.svelte';
 	import JsonLD from '$lib/components/common/JsonLD.svelte';
@@ -25,6 +26,30 @@
 	}));
 
 	const Content = $derived(data.Content);
+
+	let showShortcuts = $state(false);
+
+	function handlePostKeydown(e: KeyboardEvent) {
+		const tag = (e.target as HTMLElement)?.tagName;
+		if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
+
+		// j/k or ←/→: prev/next post
+		if ((e.key === 'ArrowLeft' || e.key === 'j') && data.prevPost) {
+			goto("/blog/" + data.prevPost.slug);
+		}
+		if ((e.key === 'ArrowRight' || e.key === 'k') && data.nextPost) {
+			goto("/blog/" + data.nextPost.slug);
+		}
+		// h: go home
+		if (e.key === 'h' && !e.metaKey && !e.ctrlKey) {
+			goto('/');
+		}
+		// t: toggle TOC on mobile
+		// ?: show shortcuts help
+		if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
+			showShortcuts = !showShortcuts;
+		}
+	}
 
 	$effect(() => {
 		if (!browser) return;
@@ -88,6 +113,25 @@
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
 </script>
+
+<svelte:window onkeydown={handlePostKeydown} />
+
+<!-- Keyboard shortcuts help -->
+{#if showShortcuts}
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm" onclick={() => showShortcuts = false} onkeydown={(e) => e.key === 'Escape' && (showShortcuts = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<div class="mx-4 w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-2xl" onclick={(e) => e.stopPropagation()}>
+			<h3 class="mb-4 text-sm font-semibold text-foreground">단축키</h3>
+			<div class="space-y-2 text-sm">
+				<div class="flex justify-between"><span class="text-muted-foreground">검색</span><kbd class="rounded border border-border/50 px-1.5 py-0.5 text-xs">/</kbd></div>
+				<div class="flex justify-between"><span class="text-muted-foreground">이전 글</span><div class="flex gap-1"><kbd class="rounded border border-border/50 px-1.5 py-0.5 text-xs">←</kbd><kbd class="rounded border border-border/50 px-1.5 py-0.5 text-xs">j</kbd></div></div>
+				<div class="flex justify-between"><span class="text-muted-foreground">다음 글</span><div class="flex gap-1"><kbd class="rounded border border-border/50 px-1.5 py-0.5 text-xs">→</kbd><kbd class="rounded border border-border/50 px-1.5 py-0.5 text-xs">k</kbd></div></div>
+				<div class="flex justify-between"><span class="text-muted-foreground">홈으로</span><kbd class="rounded border border-border/50 px-1.5 py-0.5 text-xs">h</kbd></div>
+				<div class="flex justify-between"><span class="text-muted-foreground">이 도움말</span><kbd class="rounded border border-border/50 px-1.5 py-0.5 text-xs">?</kbd></div>
+			</div>
+			<p class="mt-4 text-xs text-muted-foreground">ESC로 닫기</p>
+		</div>
+	</div>
+{/if}
 
 <SEO
 	title={data.title}
