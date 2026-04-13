@@ -26,6 +26,13 @@
 		mobileOpen = false;
 	}
 
+	$effect(() => {
+		if (browser) {
+			document.body.style.overflow = mobileOpen ? 'hidden' : '';
+			return () => { document.body.style.overflow = ''; };
+		}
+	});
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape' && mobileOpen) {
 			closeMobile();
