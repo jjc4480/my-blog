@@ -1,13 +1,14 @@
 import { redirect, error } from '@sveltejs/kit';
 import { exchangeCodeForToken, getGitHubUser } from '$lib/server/auth';
 import { createSessionCookie } from '$lib/server/session';
+import { getEnv } from '$lib/server/env';
 import type { RequestHandler } from './$types';
 
 export const prerender = false;
 
 export const GET: RequestHandler = async ({ url, platform, cookies }) => {
-	const env = platform?.env;
-	if (!env?.GITHUB_CLIENT_ID || !env?.GITHUB_CLIENT_SECRET || !env?.SESSION_SECRET) {
+	const env = getEnv(platform);
+	if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET || !env.SESSION_SECRET) {
 		return new Response('OAuth not configured', { status: 500 });
 	}
 

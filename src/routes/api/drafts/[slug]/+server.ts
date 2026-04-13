@@ -1,12 +1,13 @@
 import { json } from '@sveltejs/kit';
 import { getPostFile, putPostFile, deletePostFile } from '$lib/server/github';
 import type { RequestHandler } from './$types';
+import { getEnv } from '$lib/server/env';
 
 export const prerender = false;
 
 export const GET: RequestHandler = async ({ params, locals, platform }) => {
 	const user = locals.user;
-	const repo = platform?.env?.GITHUB_REPO;
+	const repo = getEnv(platform).GITHUB_REPO;
 	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const { content, sha } = await getPostFile(user.token, repo, params.slug);
@@ -15,7 +16,7 @@ export const GET: RequestHandler = async ({ params, locals, platform }) => {
 
 export const PUT: RequestHandler = async ({ params, request, locals, platform }) => {
 	const user = locals.user;
-	const repo = platform?.env?.GITHUB_REPO;
+	const repo = getEnv(platform).GITHUB_REPO;
 	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const { content, sha, publish } = await request.json();
@@ -28,7 +29,7 @@ export const PUT: RequestHandler = async ({ params, request, locals, platform })
 
 export const DELETE: RequestHandler = async ({ params, request, locals, platform }) => {
 	const user = locals.user;
-	const repo = platform?.env?.GITHUB_REPO;
+	const repo = getEnv(platform).GITHUB_REPO;
 	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const { sha } = await request.json();

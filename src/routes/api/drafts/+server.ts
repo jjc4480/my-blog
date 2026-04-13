@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { listPostFiles, getPostFile, putPostFile } from '$lib/server/github';
 import type { RequestHandler } from './$types';
+import { getEnv } from '$lib/server/env';
 
 export const prerender = false;
 
@@ -99,7 +100,7 @@ published: ${meta.published}
 
 export const GET: RequestHandler = async ({ locals, platform }) => {
 	const user = locals.user;
-	const repo = platform?.env?.GITHUB_REPO;
+	const repo = getEnv(platform).GITHUB_REPO;
 	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const files = await listPostFiles(user.token, repo);
@@ -136,7 +137,7 @@ export const GET: RequestHandler = async ({ locals, platform }) => {
 
 export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	const user = locals.user;
-	const repo = platform?.env?.GITHUB_REPO;
+	const repo = getEnv(platform).GITHUB_REPO;
 	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const { title, slug, category, tags, description } = await request.json();

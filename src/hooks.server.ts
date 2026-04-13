@@ -1,9 +1,10 @@
 import { redirect, json } from '@sveltejs/kit';
+import { getEnv } from '$lib/server/env';
 import { getSessionUser } from '$lib/server/session';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const secret = event.platform?.env?.SESSION_SECRET;
+	const secret = getEnv(event.platform).SESSION_SECRET || '';
 	if (secret) {
 		event.locals.user = await getSessionUser(event.cookies, secret);
 	} else {

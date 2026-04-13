@@ -1,12 +1,13 @@
 import { redirect } from '@sveltejs/kit';
 import { getGitHubAuthUrl } from '$lib/server/auth';
+import { getEnv } from '$lib/server/env';
 import type { RequestHandler } from './$types';
 
 export const prerender = false;
 
 export const GET: RequestHandler = async ({ platform, url }) => {
-	const env = platform?.env;
-	if (!env?.GITHUB_CLIENT_ID) {
+	const env = getEnv(platform);
+	if (!env.GITHUB_CLIENT_ID) {
 		return new Response('OAuth not configured', { status: 500 });
 	}
 
