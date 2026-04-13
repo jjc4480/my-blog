@@ -9,6 +9,8 @@
 				<a href="/" class="hover:text-foreground transition-colors">홈</a>
 				<a href="/tags" class="hover:text-foreground transition-colors">태그</a>
 				<a href="/rss.xml" class="hover:text-foreground transition-colors">RSS</a>
+				<a href="/about" class="hover:text-foreground transition-colors">About</a>
+				<a href="/privacy" class="hover:text-foreground transition-colors">개인정보처리방침</a>
 			</div>
 			<a href="mailto:{siteConfig.author.email}" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
 				{siteConfig.author.email}
