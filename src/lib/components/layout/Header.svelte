@@ -76,7 +76,7 @@
 		</nav>
 
 		{#if allTags.length > 0}
-			<div class="border-t border-border/50 pt-4">
+			<div class="mt-4 border-t border-border/50 pt-4">
 				<p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">태그</p>
 				<div class="flex flex-wrap gap-1.5 px-3">
 					{#each allTags as tag}
