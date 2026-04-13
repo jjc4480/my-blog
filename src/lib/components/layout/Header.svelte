@@ -57,7 +57,7 @@
 			<kbd class="rounded border border-border/50 px-1 py-0.5 text-[10px]"><span class="mac-key">⌘K</span><span class="other-key">Ctrl K</span></kbd>
 		</button>
 
-		<nav class="flex flex-1 flex-col gap-0.5" aria-label="메인 네비게이션">
+		<nav class="flex flex-col gap-0.5" aria-label="메인 네비게이션">
 			{#each navItems as { href, label }}
 				<a
 					{href}

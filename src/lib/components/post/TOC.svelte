@@ -52,7 +52,7 @@
 
 {#if headings.length > 0}
 	<!-- Mobile/tablet: collapsible inside content flow -->
-	<div class="mb-8 rounded-lg border border-border/50 bg-card p-4 2xl:hidden">
+	<div class="mb-8 rounded-lg border border-border/50 bg-card p-4 xl:hidden">
 		<button
 			onclick={() => tocOpen = !tocOpen}
 			class="flex w-full items-center justify-between text-sm font-medium text-foreground"
@@ -87,7 +87,7 @@
 	</div>
 
 	<!-- Desktop xl+: fixed right sidebar, outside content flow -->
-	<aside class="fixed top-24 right-8 hidden w-48 max-h-[calc(100vh-8rem)] overflow-y-auto 2xl:block">
+	<aside class="fixed top-24 right-8 hidden w-48 max-h-[calc(100vh-8rem)] overflow-y-auto xl:block">
 		<nav aria-label="목차">
 			<p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">목차</p>
 			<ul class="space-y-1 border-l border-border/50">
