@@ -3,7 +3,10 @@
 
 	let { open = $bindable(false) } = $props();
 
-	const isMac = browser && navigator.platform.toUpperCase().includes('MAC');
+	let isMac = $state(false);
+	if (browser) {
+		isMac = navigator.platform.toUpperCase().includes('MAC');
+	}
 
 	const shortcuts = [
 		{ label: '검색', keys: isMac ? ['⌘', 'K'] : ['Ctrl', 'K'] },
