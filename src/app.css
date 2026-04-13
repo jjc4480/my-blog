@@ -350,3 +350,17 @@
 .animate-sheet-up {
 	animation: sheet-up 0.25s ease-out;
 }
+
+/* Mermaid diagrams */
+.prose pre.mermaid {
+	background: transparent !important;
+	border: none !important;
+	padding: 1rem 0 !important;
+	text-align: center;
+	overflow-x: auto;
+}
+
+.prose pre.mermaid svg {
+	max-width: 100%;
+	height: auto;
+}

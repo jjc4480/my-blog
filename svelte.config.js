@@ -19,6 +19,9 @@ const config = {
 			remarkPlugins: [remarkGfm],
 			highlight: {
 				highlighter: (code, lang) => {
+					if (lang === 'mermaid') {
+						return `<pre class="mermaid">${code}</pre>`;
+					}
 					const html = shiki.codeToHtml(code, {
 						lang: lang || 'text',
 						themes: {
@@ -26,8 +29,6 @@ const config = {
 							dark: 'github-dark'
 						}
 					});
-					// mdsvex wraps in its own <pre>, so we return the shiki output directly
-					// shiki outputs: <pre class="shiki ..."><code>...</code></pre>
 					return `{@html \`${html.replace(/`/g, '\\`')}\`}`;
 				}
 			}

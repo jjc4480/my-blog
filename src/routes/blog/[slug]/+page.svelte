@@ -70,7 +70,21 @@
 			});
 			headings = items;
 
-			article.querySelectorAll('pre').forEach((pre) => {
+			// Mermaid diagrams
+			const mermaidBlocks = article.querySelectorAll('pre.mermaid');
+			if (mermaidBlocks.length > 0) {
+				import('mermaid').then(({ default: mermaid }) => {
+					const isDark = document.documentElement.classList.contains('dark');
+					mermaid.initialize({
+						startOnLoad: false,
+						theme: isDark ? 'dark' : 'default',
+						fontFamily: 'inherit'
+					});
+					mermaid.run({ nodes: mermaidBlocks });
+				});
+			}
+
+			article.querySelectorAll('pre:not(.mermaid)').forEach((pre) => {
 				if (pre.querySelector('.copy-btn')) return;
 				const wrapper = document.createElement('div');
 				wrapper.className = 'relative group';
