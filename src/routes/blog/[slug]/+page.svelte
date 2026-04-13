@@ -130,6 +130,10 @@
 			<a href="/category/{data.category}" class="hover:text-foreground transition-colors">{data.category}</a>
 			<span>·</span>
 			<span>{data.readingTime}분 읽기</span>
+			{#if isAdmin}
+				<span>·</span>
+				<a href="/drafts/{data.slug}" class="hover:text-foreground transition-colors">편집</a>
+			{/if}
 		</div>
 		<h1 class="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{data.title}</h1>
 		<div class="mt-4 flex flex-wrap gap-1.5">
