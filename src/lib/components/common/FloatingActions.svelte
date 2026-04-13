@@ -22,6 +22,11 @@
 	});
 
 	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape' && shortcutsOpen) {
+			e.stopPropagation();
+			shortcutsOpen = false;
+			return;
+		}
 		if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
 			const tag = (e.target as HTMLElement)?.tagName;
 			if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !(e.target as HTMLElement)?.isContentEditable) {
@@ -84,10 +89,9 @@
 	</button>
 </div>
 
-<!-- First-visit toast -->
 {#if showToast}
 	<div class="fixed bottom-24 right-6 z-50 animate-fade-in rounded-lg border border-border/50 bg-card px-4 py-2.5 text-sm text-muted-foreground shadow-lg backdrop-blur-sm">
-		<kbd class="rounded border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-sm font-mono">?</kbd> 키로 단축키를 확인할 수 있습니다
+		<kbd class="rounded border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-xs font-mono">?</kbd> 키로 단축키를 확인할 수 있습니다
 	</div>
 {/if}
 

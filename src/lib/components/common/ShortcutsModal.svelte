@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+
 	let { open = $bindable(false) } = $props();
 
+	const isMac = browser && navigator.platform.toUpperCase().includes('MAC');
+
 	const shortcuts = [
-		{ label: '검색', keys: ['/'] },
+		{ label: '검색', keys: isMac ? ['⌘', 'K'] : ['Ctrl', 'K'] },
 		{ label: '이전 글', keys: ['←', 'j'] },
 		{ label: '다음 글', keys: ['→', 'k'] },
 		{ label: '홈으로', keys: ['h'] },
@@ -14,7 +18,6 @@
 	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm"
 		onclick={() => open = false}
-		onkeydown={(e) => e.key === 'Escape' && (open = false)}
 		role="dialog"
 		aria-modal="true"
 		aria-label="단축키 도움말"
