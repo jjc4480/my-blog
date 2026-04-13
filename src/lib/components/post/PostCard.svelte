@@ -1,13 +1,9 @@
 <script lang="ts">
 	import type { Post } from '$lib/content/types';
 	import TagChip from '../common/TagChip.svelte';
+	import { formatDate } from '$lib/utils';
 
 	let { post }: { post: Post } = $props();
-
-	function formatDate(dateStr: string): string {
-		const d = new Date(dateStr);
-		return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-	}
 </script>
 
 <article class="group py-6">

@@ -6,16 +6,12 @@
 	import TOC from '$lib/components/post/TOC.svelte';
 	import { siteConfig } from '$lib/config';
 	import { buildArticleSchema } from '$lib/seo';
+	import { formatDate } from '$lib/utils';
 
 	let { data } = $props();
 
 	interface TocItem { id: string; text: string; level: number; }
 	let headings: TocItem[] = $state([]);
-
-	function formatDate(dateStr: string): string {
-		const d = new Date(dateStr);
-		return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-	}
 
 	const articleSchema = $derived(buildArticleSchema({
 		title: data.title,
@@ -28,13 +24,10 @@
 
 	const Content = $derived(data.Content);
 
-	// Extract headings from DOM after render
 	$effect(() => {
 		if (!browser) return;
-		// Track slug + Content to re-run when navigating between posts
 		void data.slug;
 		void Content;
-		// Wait for DOM to update with new content
 		requestAnimationFrame(() => {
 			const article = document.querySelector('article .prose');
 			if (!article) return;
@@ -42,7 +35,7 @@
 			const items: TocItem[] = [];
 			els.forEach((el) => {
 				if (!el.id) {
-					el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-').replace(/^-|-$/g, '') ?? '';
+					el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9\uac00-\ud7a3]+/g, '-').replace(/^-|-$/g, '') ?? '';
 				}
 				items.push({ id: el.id, text: el.textContent?.trim() ?? '', level: parseInt(el.tagName[1]) });
 			});
@@ -62,17 +55,16 @@
 />
 <JsonLD schema={articleSchema} />
 
-<!-- Desktop TOC — fixed right sidebar, xl+ only -->
 <TOC {headings} />
 
 <article>
 	<header class="mb-10">
 		<div class="mb-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
 			<time datetime={data.date}>{formatDate(data.date)}</time>
-			<span>·</span>
+			<span>\u00b7</span>
 			<a href="/category/{data.category}" class="hover:text-foreground transition-colors">{data.category}</a>
-			<span>·</span>
-			<span>{data.readingTime}분 읽기</span>
+			<span>\u00b7</span>
+			<span>{data.readingTime}\ubd84 \uc77d\uae30</span>
 		</div>
 		<h1 class="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{data.title}</h1>
 		<div class="mt-4 flex flex-wrap gap-1.5">
@@ -86,11 +78,10 @@
 		<Content />
 	</div>
 
-	<!-- Prev/Next navigation -->
-	<nav class="mt-16 grid gap-4 border-t border-border/50 pt-8 sm:grid-cols-2" aria-label="이전/다음 글">
+	<nav class="mt-16 grid gap-4 border-t border-border/50 pt-8 sm:grid-cols-2" aria-label="\uc774\uc804/\ub2e4\uc74c \uae00">
 		{#if data.prevPost}
 			<a href="/blog/{data.prevPost.slug}" class="group flex flex-col rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/40">
-				<span class="text-xs text-muted-foreground">← 이전 글</span>
+				<span class="text-xs text-muted-foreground">\u2190 \uc774\uc804 \uae00</span>
 				<span class="mt-1 text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">{data.prevPost.title}</span>
 			</a>
 		{:else}
@@ -98,7 +89,7 @@
 		{/if}
 		{#if data.nextPost}
 			<a href="/blog/{data.nextPost.slug}" class="group flex flex-col items-end text-right rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/40">
-				<span class="text-xs text-muted-foreground">다음 글 →</span>
+				<span class="text-xs text-muted-foreground">\ub2e4\uc74c \uae00 \u2192</span>
 				<span class="mt-1 text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">{data.nextPost.title}</span>
 			</a>
 		{/if}

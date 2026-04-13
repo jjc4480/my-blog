@@ -110,6 +110,7 @@
 	</div>
 
 	{#if mobileOpen}
+		<div class="fixed inset-0 z-40" onclick={() => mobileOpen = false} role="presentation"></div>
 		<nav id="mobile-nav" class="border-t border-border/50 bg-background px-4 pb-4 pt-2 sm:px-6" aria-label="모바일 네비게이션">
 			{#each navItems as { href, label }}
 				<a

@@ -15,22 +15,23 @@ export interface SearchData {
 	posts: SearchPost[];
 }
 
-/** Strip markdown syntax for plain-text indexing */
 function stripMarkdown(md: string): string {
 	return md
-		.replace(/```[\s\S]*?```/g, '')     // code blocks
-		.replace(/`[^`]+`/g, '')             // inline code
-		.replace(/!\[.*?\]\(.*?\)/g, '')     // images
-		.replace(/\[([^\]]+)\]\(.*?\)/g, '$1') // links → text
-		.replace(/#{1,6}\s+/g, '')           // headings
-		.replace(/[*_~]{1,3}/g, '')          // bold/italic/strike
-		.replace(/>\s+/gm, '')               // blockquotes
-		.replace(/-{3,}/g, '')               // horizontal rules
+		.replace(/^---[\s\S]*?^---/m, '')
+		.replace(/<!--[\s\S]*?-->/g, '')
+		.replace(/<[^>]+>/g, '')
+		.replace(/```[\s\S]*?```/g, '')
+		.replace(/`[^`]+`/g, '')
+		.replace(/!\[.*?\]\(.*?\)/g, '')
+		.replace(/\[([^\]]+)\]\(.*?\)/g, '$1')
+		.replace(/#{1,6}\s+/g, '')
+		.replace(/[*_~]{1,3}/g, '')
+		.replace(/>\s+/gm, '')
+		.replace(/-{3,}/g, '')
 		.replace(/\n{2,}/g, '\n')
 		.trim();
 }
 
-/** Build search data from posts + raw markdown content */
 export function buildSearchData(posts: Post[], rawContents: Record<string, string>): SearchData {
 	return {
 		posts: posts.map((p) => ({
@@ -45,7 +46,6 @@ export function buildSearchData(posts: Post[], rawContents: Record<string, strin
 	};
 }
 
-/** Client-side search engine */
 export class SearchEngine {
 	private titleIndex: FlexSearch.Index;
 	private descIndex: FlexSearch.Index;
@@ -69,14 +69,13 @@ export class SearchEngine {
 		}
 	}
 
-	search(query: string): SearchPost[] {
+	search(query: string, limit = 50): SearchPost[] {
 		if (!query.trim()) return [];
 
-		const titleHits = new Set(this.titleIndex.search(query, { limit: 20 }) as number[]);
-		const descHits = new Set(this.descIndex.search(query, { limit: 20 }) as number[]);
-		const bodyHits = new Set(this.bodyIndex.search(query, { limit: 20 }) as number[]);
+		const titleHits = new Set(this.titleIndex.search(query, { limit }) as number[]);
+		const descHits = new Set(this.descIndex.search(query, { limit }) as number[]);
+		const bodyHits = new Set(this.bodyIndex.search(query, { limit }) as number[]);
 
-		// Score: title match = 10, desc/tags match = 5, body match = 1
 		const scores = new Map<number, number>();
 		for (const i of titleHits) scores.set(i, (scores.get(i) ?? 0) + 10);
 		for (const i of descHits) scores.set(i, (scores.get(i) ?? 0) + 5);
