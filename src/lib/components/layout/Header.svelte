@@ -112,33 +112,44 @@
 		</div>
 	</div>
 
-	{#if mobileOpen}
-		<!-- Fullscreen backdrop with blur -->
-		<button
-			class="fixed inset-0 z-40 bg-background/60 backdrop-blur-md"
-			onclick={closeMobile}
-			aria-label="메뉴 닫기"
-			tabindex="-1"
-		></button>
-		<!-- Menu panel -->
-		<nav
-			id="mobile-nav"
-			class="fixed left-0 right-0 top-14 z-50 border-t border-border/50 bg-background/80 backdrop-blur-xl px-4 pb-6 pt-3 sm:px-6 animate-slide-down"
-			aria-label="모바일 네비게이션"
-		>
-			{#each navItems as { href, label }}
-				<a
-					{href}
-					onclick={closeMobile}
-					class="block rounded-md px-3 py-2.5 text-sm transition-colors {isActive(href)
-						? 'text-foreground font-medium bg-secondary/60'
-						: 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'}"
-				>
-					{label}
-				</a>
-			{/each}
-		</nav>
-	{/if}
 </header>
+
+{#if mobileOpen}
+	<!-- Fullscreen backdrop with blur — covers everything -->
+	<button
+		class="fixed inset-0 z-[60] bg-background/50 backdrop-blur-md lg:hidden"
+		onclick={closeMobile}
+		aria-label="메뉴 닫기"
+		tabindex="-1"
+	></button>
+	<!-- Menu panel on top of backdrop -->
+	<nav
+		id="mobile-nav"
+		class="fixed left-0 right-0 top-0 z-[70] border-b border-border/50 bg-background/90 backdrop-blur-xl px-4 pb-6 pt-4 sm:px-6 animate-slide-down lg:hidden"
+		aria-label="모바일 네비게이션"
+	>
+		<div class="flex items-center justify-between mb-4">
+			<span class="text-lg font-semibold tracking-tight text-foreground">{siteConfig.title}</span>
+			<button
+				onclick={closeMobile}
+				class="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
+				aria-label="메뉴 닫기"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+			</button>
+		</div>
+		{#each navItems as { href, label }}
+			<a
+				{href}
+				onclick={closeMobile}
+				class="block rounded-md px-3 py-2.5 text-sm transition-colors {isActive(href)
+					? 'text-foreground font-medium bg-secondary/60'
+					: 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'}"
+			>
+				{label}
+			</a>
+		{/each}
+	</nav>
+{/if}
 
 <SearchModal bind:open={searchOpen} />

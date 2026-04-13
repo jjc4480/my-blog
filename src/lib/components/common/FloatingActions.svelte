@@ -59,7 +59,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="fixed bottom-6 right-6 z-50 hidden flex-col items-center gap-2 lg:flex">
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-2">
 	{#if showScrollTop}
 		<button
 			onclick={scrollToTop}
@@ -71,7 +71,7 @@
 	{/if}
 	<button
 		onclick={toggleTheme}
-		class="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl"
+		class="hidden h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl lg:flex"
 		aria-label={dark ? '라이트 모드로 전환' : '다크 모드로 전환'}
 	>
 		{#if dark}
@@ -82,7 +82,7 @@
 	</button>
 	<button
 		onclick={() => shortcutsOpen = true}
-		class="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl"
+		class="hidden h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl lg:flex"
 		aria-label="단축키 도움말"
 	>
 		<span class="text-sm font-mono font-medium">?</span>

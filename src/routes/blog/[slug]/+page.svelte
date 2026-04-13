@@ -172,4 +172,28 @@
 	</nav>
 </article>
 
-
+<!-- Mobile floating prev/next buttons -->
+{#if data.prevPost || data.nextPost}
+	<div class="fixed bottom-6 left-4 right-4 z-40 flex items-center justify-between lg:hidden">
+		{#if data.prevPost}
+			<a
+				href="/blog/{data.prevPost.slug}"
+				class="flex h-10 items-center gap-1.5 rounded-full border border-border/50 bg-background/80 px-4 text-sm text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+				이전
+			</a>
+		{:else}
+			<div></div>
+		{/if}
+		{#if data.nextPost}
+			<a
+				href="/blog/{data.nextPost.slug}"
+				class="flex h-10 items-center gap-1.5 rounded-full border border-border/50 bg-background/80 px-4 text-sm text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground"
+			>
+				다음
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+			</a>
+		{/if}
+	</div>
+{/if}
