@@ -14,7 +14,6 @@
 	interface TocItem { id: string; text: string; level: number; }
 	let headings: TocItem[] = $state([]);
 	let readingProgress = $state(0);
-	let showScrollTop = $state(false);
 
 	const articleSchema = $derived(buildArticleSchema({
 		title: data.title,
@@ -98,15 +97,11 @@
 			const scrollTop = el.scrollTop;
 			const scrollHeight = el.scrollHeight - el.clientHeight;
 			readingProgress = scrollHeight > 0 ? Math.min((scrollTop / scrollHeight) * 100, 100) : 0;
-			showScrollTop = scrollTop > 400;
 		}
 		window.addEventListener('scroll', onScroll, { passive: true });
 		return () => window.removeEventListener('scroll', onScroll);
 	});
 
-	function scrollToTop() {
-		window.scrollTo({ top: 0, behavior: 'smooth' });
-	}
 </script>
 
 <svelte:window onkeydown={handlePostKeydown} />
@@ -166,12 +161,4 @@
 	</nav>
 </article>
 
-{#if showScrollTop}
-	<button
-		onclick={scrollToTop}
-		class="fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl"
-		aria-label="맨 위로 스크롤"
-	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-	</button>
-{/if}
+

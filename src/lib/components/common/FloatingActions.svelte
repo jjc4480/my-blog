@@ -1,0 +1,79 @@
+<script lang="ts">
+	import { browser } from '$app/environment';
+	import ShortcutsModal from './ShortcutsModal.svelte';
+
+	let showScrollTop = $state(false);
+	let showToast = $state(false);
+	let shortcutsOpen = $state(false);
+	let dark = $state(false);
+
+	if (browser) {
+		dark = document.documentElement.classList.contains('dark');
+
+		if (!localStorage.getItem('shortcuts-hint-seen')) {
+			showToast = true;
+			localStorage.setItem('shortcuts-hint-seen', '1');
+			setTimeout(() => { showToast = false; }, 5000);
+		}
+	}
+
+	function toggleTheme() {
+		dark = !dark;
+		if (browser) {
+			document.documentElement.classList.toggle('dark', dark);
+			localStorage.setItem('theme', dark ? 'dark' : 'light');
+		}
+	}
+
+	$effect(() => {
+		if (!browser) return;
+		function onScroll() {
+			showScrollTop = window.scrollY > 400;
+		}
+		window.addEventListener('scroll', onScroll, { passive: true });
+		return () => window.removeEventListener('scroll', onScroll);
+	});
+
+	function scrollToTop() {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+</script>
+
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-2">
+	{#if showScrollTop}
+		<button
+			onclick={scrollToTop}
+			class="flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl"
+			aria-label="맨 위로 스크롤"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+		</button>
+	{/if}
+	<button
+		onclick={toggleTheme}
+		class="flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl"
+		aria-label={dark ? '라이트 모드로 전환' : '다크 모드로 전환'}
+	>
+		{#if dark}
+			<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+		{:else}
+			<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+		{/if}
+	</button>
+	<button
+		onclick={() => shortcutsOpen = true}
+		class="flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl"
+		aria-label="단축키 도움말"
+	>
+		<span class="text-xs font-mono font-medium">?</span>
+	</button>
+</div>
+
+<!-- First-visit toast -->
+{#if showToast}
+	<div class="fixed bottom-20 right-6 z-50 animate-fade-in rounded-lg border border-border/50 bg-card px-4 py-2.5 text-sm text-muted-foreground shadow-lg backdrop-blur-sm">
+		<kbd class="rounded border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-xs font-mono">?</kbd> 키로 단축키를 확인할 수 있습니다
+	</div>
+{/if}
+
+<ShortcutsModal bind:open={shortcutsOpen} />

@@ -125,7 +125,6 @@
 /* Shiki dual theme — show correct theme per mode */
 .shiki,
 .shiki span {
-	color: var(--shiki-light) !important;
 	background-color: transparent !important;
 }
 
@@ -133,6 +132,10 @@
 .dark .shiki span {
 	color: var(--shiki-dark) !important;
 	background-color: transparent !important;
+}
+
+.dark .shiki {
+	background-color: var(--code-bg) !important;
 }
 
 /* Code block styling */
@@ -183,4 +186,14 @@
 
 :focus:not(:focus-visible) {
 	outline: none;
+}
+
+/* Toast animation */
+@keyframes fade-in {
+	from { opacity: 0; transform: translateY(8px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+	animation: fade-in 0.3s ease-out;
 }
