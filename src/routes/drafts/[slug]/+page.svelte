@@ -63,16 +63,16 @@
 			const fresh = await draftFetch(`/api/drafts/${data.slug}`);
 			const d = await fresh.json();
 			sha = d.sha;
-			status =  + "저장됨" + r;
+			status = '저장됨';
 			setTimeout(() => { status = ''; }, 2000);
 		} else {
-			status =  + "저장 실패" + r;
+			status = '저장 실패';
 		}
 		saving = false;
 	}
 
 	async function publish() {
-		if (!confirm( + "게시하시겠습니까? 즉시 배포됩니다." + r)) return;
+		if (!confirm('게시하시겠습니까? 즉시 배포됩니다.')) return;
 		publishing = true;
 		frontmatter = setPublished(frontmatter, true);
 		const content = buildContent();
@@ -82,10 +82,10 @@
 			body: JSON.stringify({ content, sha, publish: true })
 		});
 		if (res.ok) {
-			status =  + "게시 완료! 배포가 시작됩니다." + r;
+			status = '게시 완료! 배포가 시작됩니다.';
 			setTimeout(() => goto('/drafts'), 2000);
 		} else {
-			status =  + "게시 실패" + r;
+			status = '게시 실패';
 			frontmatter = setPublished(frontmatter, false);
 		}
 		publishing = false;
@@ -97,7 +97,7 @@
 	}
 
 	async function deleteDraft() {
-		if (!confirm( + "이 초안을 삭제하시겠습니까?" + r)) return;
+		if (!confirm('이 초안을 삭제하시겠습니까?')) return;
 		await draftFetch(`/api/drafts/${data.slug}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
@@ -127,7 +127,7 @@
 	</div>
 	<div class="flex items-center gap-2">
 		<button onclick={save} disabled={saving} class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/40 transition-colors disabled:opacity-50">
-			{saving ?  + "저장 중..." + r :  + "저장" + r}
+			{saving ? '저장 중...' : '저장'}
 			<kbd class="ml-1 text-[10px] text-muted-foreground">⌘S</kbd>
 		</button>
 		{#if isPublished(frontmatter)}
@@ -136,7 +136,7 @@
 			</button>
 		{:else}
 			<button onclick={publish} disabled={publishing} class="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50">
-				{publishing ?  + "게시 중..." + r :  + "게시" + r}
+				{publishing ? '게시 중...' : '게시'}
 			</button>
 		{/if}
 		<button onclick={deleteDraft} class="rounded-md border border-destructive/30 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10 transition-colors">
