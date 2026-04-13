@@ -9,13 +9,17 @@
 
 	if (browser) {
 		dark = document.documentElement.classList.contains('dark');
-
-		if (!localStorage.getItem('shortcuts-hint-seen')) {
-			showToast = true;
-			localStorage.setItem('shortcuts-hint-seen', '1');
-			setTimeout(() => { showToast = false; }, 5000);
-		}
 	}
+
+	$effect(() => {
+		if (!browser) return;
+		if (!sessionStorage.getItem('shortcuts-hint-seen')) {
+			showToast = true;
+			sessionStorage.setItem('shortcuts-hint-seen', '1');
+			const timer = setTimeout(() => { showToast = false; }, 5000);
+			return () => clearTimeout(timer);
+		}
+	});
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
