@@ -3,8 +3,17 @@ import { Resvg } from '@resvg/resvg-js';
 import { siteConfig } from '$lib/config';
 import { getPosts } from '$lib/content/posts';
 import type { RequestHandler } from './$types';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
+export const prerender = true;
 
+export async function entries() {
+	const posts = await getPosts();
+	return posts.map((p) => ({ slug: p.slug }));
+}
+
+const fontData = readFileSync(join(process.cwd(), 'static/fonts/NotoSansKR-Bold.ttf'));
 
 export const GET: RequestHandler = async ({ params }) => {
 	const posts = await getPosts();
@@ -46,7 +55,14 @@ export const GET: RequestHandler = async ({ params }) => {
 		{
 			width: 1200,
 			height: 630,
-			fonts: []
+			fonts: [
+				{
+					name: 'Noto Sans KR',
+					data: fontData,
+					weight: 700,
+					style: 'normal'
+				}
+			]
 		}
 	);
 
