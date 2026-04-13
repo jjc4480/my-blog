@@ -4,6 +4,14 @@
 	import ThemeToggle from './ThemeToggle.svelte';
 	import SearchModal from '$lib/components/common/SearchModal.svelte';
 	import { siteConfig } from '$lib/config';
+	import TagChip from '$lib/components/common/TagChip.svelte';
+
+	const tagModules = import.meta.glob('/content/posts/*.md', { eager: true });
+	const allTags: string[] = [...new Set(
+		Object.values(tagModules)
+			.filter((m: any) => m.metadata?.published !== false)
+			.flatMap((m: any) => m.metadata?.tags ?? [])
+	)].sort();
 
 	let mobileOpen = $state(false);
 	let searchOpen = $state(false);
@@ -66,6 +74,17 @@
 				</a>
 			{/each}
 		</nav>
+
+		{#if allTags.length > 0}
+			<div class="border-t border-border/50 pt-4">
+				<p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">태그</p>
+				<div class="flex flex-wrap gap-1.5 px-3">
+					{#each allTags as tag}
+						<TagChip {tag} href="/tags/{tag}" />
+					{/each}
+				</div>
+			</div>
+		{/if}
 	</div>
 </aside>
 
