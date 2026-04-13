@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { draftFetch } from '$lib/draft/api';
 
 	let { data } = $props();
 	let drafts = $state(data.drafts);
 
 	async function deleteDraft(slug: string, sha: string) {
 		if (!confirm(`"${slug}" 초안을 삭제하시겠습니까?`)) return;
-		const res = await fetch(`/api/drafts/${slug}`, {
+		const res = await draftFetch(`/api/drafts/${slug}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ sha })

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { draftFetch } from '$lib/draft/api';
 
 	let title = $state('');
 	let description = $state('');
@@ -24,7 +25,7 @@
 		errorMsg = '';
 		try {
 			const tags = tagsInput.split(',').map((t) => t.trim()).filter(Boolean);
-			const res = await fetch('/api/drafts', {
+			const res = await draftFetch('/api/drafts', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ title: title.trim(), slug, category: category.trim(), tags, description: description.trim() })

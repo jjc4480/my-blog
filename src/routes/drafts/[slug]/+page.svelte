@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { draftFetch } from '$lib/draft/api';
 	import { renderMarkdown } from '$lib/draft/markdown';
 
 	let { data } = $props();
@@ -38,13 +39,13 @@
 	async function save() {
 		saving = true;
 		status = '';
-		const res = await fetch(`/api/drafts/${data.slug}`, {
+		const res = await draftFetch(`/api/drafts/${data.slug}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ content, sha, publish: false })
 		});
 		if (res.ok) {
-			const fresh = await fetch(`/api/drafts/${data.slug}`);
+			const fresh = await draftFetch(`/api/drafts/${data.slug}`);
 			const d = await fresh.json();
 			sha = d.sha;
 			status = '저장됨';
@@ -59,7 +60,7 @@
 		if (!confirm('게시하시겠습니까? 즉시 배포됩니다.')) return;
 		publishing = true;
 		content = setPublished(content, true);
-		const res = await fetch(`/api/drafts/${data.slug}`, {
+		const res = await draftFetch(`/api/drafts/${data.slug}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ content, sha, publish: true })
@@ -81,7 +82,7 @@
 
 	async function deleteDraft() {
 		if (!confirm('이 초안을 삭제하시겠습니까?')) return;
-		await fetch(`/api/drafts/${data.slug}`, {
+		await draftFetch(`/api/drafts/${data.slug}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ sha })
