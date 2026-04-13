@@ -113,9 +113,9 @@
 	</div>
 
 	{#if mobileOpen}
-		<!-- Backdrop with blur -->
+		<!-- Fullscreen backdrop with blur -->
 		<button
-			class="fixed inset-0 z-40 bg-background/40 backdrop-blur-sm transition-opacity"
+			class="fixed inset-0 z-40 bg-background/60 backdrop-blur-md"
 			onclick={closeMobile}
 			aria-label="메뉴 닫기"
 			tabindex="-1"
@@ -123,7 +123,7 @@
 		<!-- Menu panel -->
 		<nav
 			id="mobile-nav"
-			class="relative z-50 border-t border-border/50 bg-background/80 backdrop-blur-xl px-4 pb-4 pt-2 sm:px-6 animate-slide-down"
+			class="fixed left-0 right-0 top-14 z-50 border-t border-border/50 bg-background/80 backdrop-blur-xl px-4 pb-6 pt-3 sm:px-6 animate-slide-down"
 			aria-label="모바일 네비게이션"
 		>
 			{#each navItems as { href, label }}
