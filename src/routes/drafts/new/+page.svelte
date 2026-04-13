@@ -31,13 +31,13 @@
 			});
 			if (!res.ok) {
 				const data = await res.json();
-				errorMsg = data.error ||  + "생성 실패" + r;
+				errorMsg = data.error || '생성 실패';
 				return;
 			}
 			const data = await res.json();
 			goto(`/drafts/${data.slug}`);
 		} catch {
-			errorMsg =  + "네트워크 오류" + r;
+			errorMsg = '네트워크 오류';
 		} finally {
 			saving = false;
 		}
@@ -77,7 +77,7 @@
 
 		<div class="flex gap-3">
 			<button type="submit" disabled={!title.trim() || saving} class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-				{saving ?  + "생성 중..." + r :  + "초안 생성" + r}
+				{saving ? '생성 중...' : '초안 생성'}
 			</button>
 			<a href="/drafts" class="rounded-md border border-border/50 px-4 py-2 text-sm transition-colors hover:bg-secondary">취소</a>
 		</div>

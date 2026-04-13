@@ -5,8 +5,8 @@
 	let drafts = $state(data.drafts);
 
 	async function deleteDraft(slug: string, sha: string) {
-		if (!confirm(`"\${slug}" 초안을 삭제하시겠습니까?`)) return;
-		const res = await fetch(`/api/drafts/\${slug}`, {
+		if (!confirm(`"${slug}" 초안을 삭제하시겠습니까?`)) return;
+		const res = await fetch(`/api/drafts/${slug}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ sha })
@@ -37,7 +37,7 @@
 					<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
 						<span>{draft.date}</span>
 						{#if draft.category}
-							<span>\u00b7</span>
+							<span>·</span>
 							<span>{draft.category}</span>
 						{/if}
 					</div>

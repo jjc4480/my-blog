@@ -6,6 +6,7 @@ interface EnvVars {
 	GITHUB_REPO: string;
 	ALLOWED_GITHUB_USER: string;
 	SESSION_SECRET: string;
+	GITHUB_TOKEN: string;
 }
 
 export function getEnv(platform: App.Platform | undefined): EnvVars {
@@ -15,5 +16,6 @@ export function getEnv(platform: App.Platform | undefined): EnvVars {
 		GITHUB_REPO: platform?.env?.GITHUB_REPO ?? privateEnv.GITHUB_REPO ?? '',
 		ALLOWED_GITHUB_USER: platform?.env?.ALLOWED_GITHUB_USER ?? privateEnv.ALLOWED_GITHUB_USER ?? '',
 		SESSION_SECRET: platform?.env?.SESSION_SECRET ?? privateEnv.SESSION_SECRET ?? '',
+		GITHUB_TOKEN: privateEnv.GITHUB_TOKEN ?? '',
 	};
 }
