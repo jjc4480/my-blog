@@ -117,7 +117,7 @@
 {#if mobileOpen}
 	<!-- Fullscreen backdrop with blur — covers everything -->
 	<button
-		class="fixed inset-0 z-[60] bg-background/50 backdrop-blur-md lg:hidden"
+		class="fixed inset-0 z-[60] bg-background/30 backdrop-blur-sm lg:hidden"
 		onclick={closeMobile}
 		aria-label="메뉴 닫기"
 		tabindex="-1"
