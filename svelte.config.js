@@ -1,6 +1,7 @@
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { mdsvex } from 'mdsvex';
+import remarkGfm from 'remark-gfm';
 import { createHighlighter } from 'shiki';
 
 const shiki = await createHighlighter({
@@ -15,6 +16,7 @@ const config = {
 		vitePreprocess(),
 		mdsvex({
 			extensions: ['.md'],
+			remarkPlugins: [remarkGfm],
 			highlight: {
 				highlighter: (code, lang) => {
 					const html = shiki.codeToHtml(code, {

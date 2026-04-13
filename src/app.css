@@ -203,3 +203,125 @@
 .other-key { display: inline; }
 [data-platform="mac"] .mac-key { display: inline; }
 [data-platform="mac"] .other-key { display: none; }
+
+/* Table */
+.prose :where(table) {
+	@apply w-full text-sm border-collapse;
+}
+
+.prose :where(thead) {
+	border-bottom: 2px solid var(--border);
+}
+
+.prose :where(th) {
+	@apply py-2 px-3 text-left font-semibold;
+	color: var(--foreground);
+}
+
+.prose :where(td) {
+	@apply py-2 px-3;
+	border-bottom: 1px solid var(--border);
+}
+
+.prose :where(tbody tr:last-child td) {
+	border-bottom: none;
+}
+
+/* Strikethrough */
+.prose :where(del) {
+	color: var(--muted-foreground);
+	text-decoration: line-through;
+}
+
+/* Task list (GFM checkbox) */
+.prose :where(ul.contains-task-list) {
+	list-style: none;
+	padding-left: 0;
+}
+
+.prose :where(.task-list-item) {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+}
+
+.prose :where(.task-list-item input[type="checkbox"]) {
+	@apply rounded border-border;
+	accent-color: var(--primary);
+	margin: 0;
+}
+
+/* Footnotes */
+.prose :where(.footnotes) {
+	@apply mt-12 pt-6 text-sm;
+	border-top: 1px solid var(--border);
+	color: var(--muted-foreground);
+}
+
+.prose :where(sup a) {
+	color: var(--primary);
+	text-decoration: none;
+	font-weight: 500;
+}
+
+/* Details / Summary */
+.prose :where(details) {
+	@apply my-4 rounded-lg border border-border/50 p-4;
+	background-color: var(--card);
+}
+
+.prose :where(summary) {
+	@apply cursor-pointer font-medium;
+	color: var(--foreground);
+}
+
+.prose :where(details[open] summary) {
+	@apply mb-3;
+}
+
+/* kbd */
+.prose :where(kbd) {
+	@apply inline-block rounded-md border border-border/50 px-1.5 py-0.5 text-xs font-mono;
+	background-color: var(--code-bg);
+	color: var(--foreground);
+	box-shadow: 0 1px 0 var(--border);
+}
+
+/* Mark / highlight */
+.prose :where(mark) {
+	@apply rounded-sm px-1;
+	background-color: oklch(0.9 0.1 90);
+	color: var(--foreground);
+}
+
+.dark .prose :where(mark) {
+	background-color: oklch(0.4 0.08 90);
+}
+
+/* Image captions (figcaption via img title) */
+.prose :where(img) {
+	@apply rounded-lg border border-border/50;
+}
+
+.prose :where(figure) {
+	@apply my-6;
+}
+
+.prose :where(figcaption) {
+	@apply mt-2 text-center text-sm;
+	color: var(--muted-foreground);
+}
+
+/* Blockquote enhanced */
+.prose :where(blockquote) {
+	@apply rounded-r-lg border-l-4 py-1;
+	background-color: color-mix(in oklch, var(--muted) 30%, transparent);
+}
+
+.prose :where(blockquote p:first-child) {
+	margin-top: 0.25rem;
+}
+
+.prose :where(blockquote p:last-child) {
+	margin-bottom: 0.25rem;
+}
