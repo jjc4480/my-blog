@@ -12,6 +12,8 @@
 
 	interface TocItem { id: string; text: string; level: number; }
 	let headings: TocItem[] = $state([]);
+	let readingProgress = $state(0);
+	let showScrollTop = $state(false);
 
 	const articleSchema = $derived(buildArticleSchema({
 		title: data.title,
@@ -31,6 +33,7 @@
 		requestAnimationFrame(() => {
 			const article = document.querySelector('article .prose');
 			if (!article) return;
+
 			const els = article.querySelectorAll('h2, h3');
 			const items: TocItem[] = [];
 			els.forEach((el) => {
@@ -40,8 +43,50 @@
 				items.push({ id: el.id, text: el.textContent?.trim() ?? '', level: parseInt(el.tagName[1]) });
 			});
 			headings = items;
+
+			article.querySelectorAll('pre').forEach((pre) => {
+				if (pre.querySelector('.copy-btn')) return;
+				const wrapper = document.createElement('div');
+				wrapper.className = 'relative group';
+				pre.parentNode?.insertBefore(wrapper, pre);
+				wrapper.appendChild(pre);
+
+				const btn = document.createElement('button');
+				btn.className = 'copy-btn absolute top-2 right-2 rounded-md border border-border/50 bg-background/80 px-2 py-1 text-xs text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground backdrop-blur-sm';
+				btn.textContent = '복사';
+				btn.addEventListener('click', async () => {
+					const code = pre.querySelector('code');
+					const text = code?.textContent ?? pre.textContent ?? '';
+					try {
+						await navigator.clipboard.writeText(text);
+						btn.textContent = '복사됨';
+						setTimeout(() => { btn.textContent = '복사'; }, 2000);
+					} catch {
+						btn.textContent = '실패';
+						setTimeout(() => { btn.textContent = '복사'; }, 2000);
+					}
+				});
+				wrapper.appendChild(btn);
+			});
 		});
 	});
+
+	$effect(() => {
+		if (!browser) return;
+		function onScroll() {
+			const el = document.documentElement;
+			const scrollTop = el.scrollTop;
+			const scrollHeight = el.scrollHeight - el.clientHeight;
+			readingProgress = scrollHeight > 0 ? Math.min((scrollTop / scrollHeight) * 100, 100) : 0;
+			showScrollTop = scrollTop > 400;
+		}
+		window.addEventListener('scroll', onScroll, { passive: true });
+		return () => window.removeEventListener('scroll', onScroll);
+	});
+
+	function scrollToTop() {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
 </script>
 
 <SEO
@@ -55,16 +100,18 @@
 />
 <JsonLD schema={articleSchema} />
 
+<div class="fixed top-0 left-0 z-50 h-0.5 bg-primary transition-all duration-150" style="width: {readingProgress}%"></div>
+
 <TOC {headings} />
 
 <article>
 	<header class="mb-10">
 		<div class="mb-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
 			<time datetime={data.date}>{formatDate(data.date)}</time>
-			<span>\u00b7</span>
+			<span>·</span>
 			<a href="/category/{data.category}" class="hover:text-foreground transition-colors">{data.category}</a>
-			<span>\u00b7</span>
-			<span>{data.readingTime}\ubd84 \uc77d\uae30</span>
+			<span>·</span>
+			<span>{data.readingTime}분 읽기</span>
 		</div>
 		<h1 class="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{data.title}</h1>
 		<div class="mt-4 flex flex-wrap gap-1.5">
@@ -78,10 +125,10 @@
 		<Content />
 	</div>
 
-	<nav class="mt-16 grid gap-4 border-t border-border/50 pt-8 sm:grid-cols-2" aria-label="\uc774\uc804/\ub2e4\uc74c \uae00">
+	<nav class="mt-16 grid gap-4 border-t border-border/50 pt-8 sm:grid-cols-2" aria-label="이전/다음 글">
 		{#if data.prevPost}
 			<a href="/blog/{data.prevPost.slug}" class="group flex flex-col rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/40">
-				<span class="text-xs text-muted-foreground">\u2190 \uc774\uc804 \uae00</span>
+				<span class="text-xs text-muted-foreground">← 이전 글</span>
 				<span class="mt-1 text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">{data.prevPost.title}</span>
 			</a>
 		{:else}
@@ -89,9 +136,19 @@
 		{/if}
 		{#if data.nextPost}
 			<a href="/blog/{data.nextPost.slug}" class="group flex flex-col items-end text-right rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/40">
-				<span class="text-xs text-muted-foreground">\ub2e4\uc74c \uae00 \u2192</span>
+				<span class="text-xs text-muted-foreground">다음 글 →</span>
 				<span class="mt-1 text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">{data.nextPost.title}</span>
 			</a>
 		{/if}
 	</nav>
 </article>
+
+{#if showScrollTop}
+	<button
+		onclick={scrollToTop}
+		class="fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground hover:shadow-xl"
+		aria-label="맨 위로 스크롤"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+	</button>
+{/if}
