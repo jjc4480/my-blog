@@ -10,6 +10,7 @@
 	let saving = $state(false);
 	let publishing = $state(false);
 	let status = $state('');
+	let activeTab: 'edit' | 'preview' = $state('edit');
 	let debounceTimer: ReturnType<typeof setTimeout>;
 
 	function isPublished(src: string): boolean {
@@ -98,6 +99,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
+<!-- Action bar -->
 <div class="mb-4 flex items-center justify-between">
 	<div class="flex items-center gap-3">
 		<a href="/drafts" class="text-sm text-muted-foreground hover:text-foreground transition-colors">← 목록</a>
@@ -127,22 +129,35 @@
 	</div>
 </div>
 
-<div class="grid h-[calc(100vh-10rem)] grid-cols-2 gap-4">
-	<div class="flex flex-col rounded-lg border border-border/50 overflow-hidden">
-		<div class="border-b border-border/50 bg-secondary/20 px-3 py-2 text-xs font-medium text-muted-foreground">마크다운</div>
+<!-- Tabs -->
+<div class="flex border-b border-border/50 mb-0">
+	<button
+		onclick={() => activeTab = 'edit'}
+		class="px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px {activeTab === 'edit' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
+	>
+		마크다운
+	</button>
+	<button
+		onclick={() => activeTab = 'preview'}
+		class="px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px {activeTab === 'preview' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
+	>
+		미리보기
+	</button>
+</div>
+
+<!-- Content area -->
+<div class="h-[calc(100vh-11rem)] rounded-b-lg border border-t-0 border-border/50 overflow-hidden">
+	{#if activeTab === 'edit'}
 		<textarea
 			bind:value={content}
-			class="flex-1 resize-none bg-background p-4 font-mono text-sm leading-relaxed text-foreground outline-none"
+			class="h-full w-full resize-none bg-background p-6 font-mono text-sm leading-relaxed text-foreground outline-none"
 			spellcheck="false"
 		></textarea>
-	</div>
-
-	<div class="flex flex-col rounded-lg border border-border/50 overflow-hidden">
-		<div class="border-b border-border/50 bg-secondary/20 px-3 py-2 text-xs font-medium text-muted-foreground">미리보기</div>
-		<div class="flex-1 overflow-y-auto p-4">
+	{:else}
+		<div class="h-full overflow-y-auto p-6">
 			<div class="prose prose-neutral dark:prose-invert max-w-none leading-[1.8]">
 				{@html preview}
 			</div>
 		</div>
-	</div>
+	{/if}
 </div>
