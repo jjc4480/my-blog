@@ -1,7 +1,7 @@
 import type { Post } from './types';
 import { getReadingTime } from './reading-time';
 
-export async function getPosts(): Promise<Post[]> {
+export async function getPosts(options?: { includeSecret?: boolean }): Promise<Post[]> {
 	const modules = import.meta.glob('/content/posts/*.md', { eager: true });
 	const rawModules = import.meta.glob('/content/posts/*.md', { query: '?raw', eager: true, import: 'default' });
 	const posts: Post[] = [];
@@ -12,6 +12,7 @@ export async function getPosts(): Promise<Post[]> {
 		const metadata = mod.metadata;
 
 		if (metadata.published === false) continue;
+		if (metadata.secret && !options?.includeSecret) continue;
 
 		const rawContent = (rawModules[path] as string) ?? '';
 

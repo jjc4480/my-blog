@@ -11,11 +11,13 @@
 
 	let { data } = $props();
 	let isAdmin = $state(false);
+	let authChecked = $state(false);
 
 	$effect(() => {
 		fetch('/api/me').then(r => r.json()).then(u => {
 			if (u?.login) isAdmin = true;
-		}).catch(() => {});
+			authChecked = true;
+		}).catch(() => { authChecked = true; });
 	});
 
 	interface TocItem { id: string; text: string; level: number; }
@@ -151,6 +153,13 @@
 			<a href="/category/{data.category}" class="hover:text-foreground transition-colors">{data.category}</a>
 			<span>·</span>
 			<span>{data.readingTime}분 읽기</span>
+			{#if data.secret && isAdmin}
+				<span>·</span>
+				<span class="inline-flex items-center gap-1 text-amber-500 text-xs font-medium">
+					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+					비밀글
+				</span>
+			{/if}
 			{#if isAdmin}
 				<span>·</span>
 				<a href="/drafts/{data.slug}" class="hover:text-foreground transition-colors">편집</a>
@@ -164,6 +173,13 @@
 		</div>
 	</header>
 
+	{#if data.secret && authChecked && !isAdmin}
+	<div class="flex flex-col items-center justify-center py-20 text-center">
+		<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground/50 mb-4"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+		<p class="text-lg font-medium text-muted-foreground">비밀글입니다</p>
+		<p class="mt-2 text-sm text-muted-foreground/70">이 글은 관리자만 열람할 수 있습니다.</p>
+	</div>
+{:else}
 	<div class="prose prose-neutral dark:prose-invert max-w-none leading-[1.8]">
 		<Content />
 	</div>
@@ -184,6 +200,7 @@
 			</a>
 		{/if}
 	</nav>
+{/if}
 </article>
 
 <!-- Mobile floating prev/next buttons -->

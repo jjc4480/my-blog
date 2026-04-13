@@ -4,7 +4,7 @@ export const load: LayoutLoad = async () => {
 	const modules = import.meta.glob('/content/posts/*.md', { eager: true });
 	const tags = [...new Set(
 		Object.values(modules)
-			.filter((m: any) => m.metadata?.published !== false)
+			.filter((m: any) => m.metadata?.published !== false && !m.metadata?.secret)
 			.flatMap((m: any) => m.metadata?.tags ?? [])
 	)].sort();
 

@@ -2,8 +2,9 @@ import { getPosts, getCategories, getTags } from '$lib/content/posts';
 import { siteConfig } from '$lib/config';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url }) => {
-	const allPosts = await getPosts();
+export const load: PageServerLoad = async ({ url, locals }) => {
+	const isAdmin = !!locals.user;
+	const allPosts = await getPosts({ includeSecret: isAdmin });
 	const page = Number(url.searchParams.get('page') ?? '1');
 	const category = url.searchParams.get('category') ?? '';
 	const tag = url.searchParams.get('tag') ?? '';

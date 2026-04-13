@@ -16,11 +16,11 @@ export const load: PageLoad = async ({ params }) => {
 	const rawContent = (rawModules[path] as string) ?? '';
 	const readingTime = getReadingTime(rawContent);
 
-	// Build sorted post list for prev/next navigation
 	const allPosts = Object.entries(modules)
 		.map(([p, m]) => {
 			const mod = m as { metadata: Record<string, unknown> };
 			if (mod.metadata.published === false) return null;
+			if (mod.metadata.secret) return null;
 			return {
 				slug: p.split('/').pop()?.replace('.md', '') ?? '',
 				title: mod.metadata.title as string,
@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ params }) => {
 		.sort((a, b) => new Date(b!.date).getTime() - new Date(a!.date).getTime()) as Array<{ slug: string; title: string; date: string }>;
 
 	const currentIndex = allPosts.findIndex((p) => p.slug === params.slug);
-	const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+	const prevPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 	const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 
 	return {
@@ -40,6 +40,7 @@ export const load: PageLoad = async ({ params }) => {
 		description: metadata.description as string,
 		tags: metadata.tags as string[],
 		category: metadata.category as string,
+		secret: (metadata.secret as boolean) ?? false,
 		slug: params.slug,
 		readingTime,
 		prevPost,

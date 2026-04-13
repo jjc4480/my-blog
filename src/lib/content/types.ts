@@ -6,6 +6,7 @@ export interface Post {
 	category: string;
 	thumbnail?: string;
 	published?: boolean;
+	secret?: boolean;
 	slug: string;
 	content: string;
 	readingTime?: number;
