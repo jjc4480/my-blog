@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ params }) => {
 	const allPosts = Object.entries(modules)
 		.map(([p, m]) => {
 			const mod = m as { metadata: Record<string, unknown> };
-			if (mod.metadata.published === false) return null;
+			if (!mod.metadata || mod.metadata.published === false) return null;
 			if (mod.metadata.secret) return null;
 			return {
 				slug: p.split('/').pop()?.replace('.md', '') ?? '',

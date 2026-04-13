@@ -1,5 +1,5 @@
 ---
-title: Go 기반 MSA 설계 — gRPC, Kafka, Keycloak으로 구성하는 백엔드
+title: 'Go 기반 MSA 설계: gRPC, Kafka, Keycloak으로 구성하는 백엔드'
 date: 2026-04-13
 description: Go로 마이크로서비스를 설계할 때 고려해야 할 통신, 이벤트, 인증 아키텍처와 각각의 트레이드오프
 tags: [go, msa, grpc, kafka, keycloak, architecture]
