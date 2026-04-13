@@ -10,6 +10,13 @@
 	import { formatDate } from '$lib/utils';
 
 	let { data } = $props();
+	let isAdmin = $state(false);
+
+	$effect(() => {
+		fetch('/api/me').then(r => r.json()).then(u => {
+			if (u?.login) isAdmin = true;
+		}).catch(() => {});
+	});
 
 	interface TocItem { id: string; text: string; level: number; }
 	let headings: TocItem[] = $state([]);
