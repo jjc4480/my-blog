@@ -9,10 +9,9 @@
 
 	let { headings }: { headings: TocItem[] } = $props();
 	let activeId = $state('');
-	let tocOpen = $state(false);
+	let sheetOpen = $state(false);
 
 	if (browser) {
-		// Track which headings are currently visible
 		let visibleIds = new Set<string>();
 
 		const observer = new IntersectionObserver(
@@ -24,7 +23,6 @@
 						visibleIds.delete(entry.target.id);
 					}
 				}
-				// Pick the first visible heading in document order
 				if (headings.length > 0) {
 					for (const h of headings) {
 						if (visibleIds.has(h.id)) {
@@ -48,45 +46,56 @@
 			};
 		});
 	}
+
+	function scrollTo(id: string) {
+		sheetOpen = false;
+		setTimeout(() => {
+			document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+		}, 100);
+	}
 </script>
 
 {#if headings.length > 0}
-	<!-- Mobile/tablet: collapsible inside content flow -->
-	<div class="mb-8 rounded-lg border border-border/50 bg-card p-4 xl:hidden">
+	<!-- Mobile: floating TOC button + bottom sheet -->
+	<button
+		onclick={() => sheetOpen = true}
+		class="fixed bottom-20 left-4 z-30 flex h-10 items-center gap-1.5 rounded-full border border-border/50 bg-background/80 px-4 text-sm text-muted-foreground shadow-lg backdrop-blur-sm transition-all hover:text-foreground xl:hidden"
+		aria-label="목차 열기"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+		목차
+	</button>
+
+	{#if sheetOpen}
 		<button
-			onclick={() => tocOpen = !tocOpen}
-			class="flex w-full items-center justify-between text-sm font-medium text-foreground"
-			aria-expanded={tocOpen}
-		>
-			목차
-			<svg
-				xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-				fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-				class="transition-transform {tocOpen ? 'rotate-180' : ''}"
-			><polyline points="6 9 12 15 18 9"/></svg>
-		</button>
-		{#if tocOpen}
-			<nav class="mt-3 border-t border-border/50 pt-3" aria-label="목차">
-				<ul class="space-y-1.5">
+			class="fixed inset-0 z-[60] bg-background/30 backdrop-blur-sm xl:hidden"
+			onclick={() => sheetOpen = false}
+			aria-label="목차 닫기"
+			tabindex="-1"
+		></button>
+		<div class="fixed bottom-0 left-0 right-0 z-[70] max-h-[60vh] overflow-y-auto rounded-t-2xl border-t border-border/50 bg-background/95 backdrop-blur-xl px-6 pb-8 pt-4 animate-sheet-up xl:hidden">
+			<div class="mx-auto mb-3 h-1 w-10 rounded-full bg-border/50"></div>
+			<p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">목차</p>
+			<nav aria-label="목차">
+				<ul class="space-y-1">
 					{#each headings as heading}
 						<li style="padding-left: {(heading.level - 2) * 0.75}rem">
-							<a
-								href="#{heading.id}"
-								onclick={() => tocOpen = false}
-								class="block text-sm leading-relaxed transition-colors {activeId === heading.id
+							<button
+								onclick={() => scrollTo(heading.id)}
+								class="block w-full text-left py-2 text-sm leading-relaxed transition-colors {activeId === heading.id
 									? 'text-primary font-medium'
 									: 'text-muted-foreground hover:text-foreground'}"
 							>
 								{heading.text}
-							</a>
+							</button>
 						</li>
 					{/each}
 				</ul>
 			</nav>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
-	<!-- Desktop xl+: fixed right sidebar, outside content flow -->
+	<!-- Desktop xl+: fixed right sidebar -->
 	<aside class="fixed top-24 right-8 hidden w-48 max-h-[calc(100vh-8rem)] overflow-y-auto xl:block">
 		<nav aria-label="목차">
 			<p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">목차</p>
