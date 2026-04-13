@@ -35,6 +35,7 @@
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "flexsearch": "^0.7.43",
-    "satori": "^0.12.2"
+    "satori": "^0.12.2",
+    "marked": "^15.0.0"
   }
 }
