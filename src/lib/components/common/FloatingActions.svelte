@@ -85,7 +85,7 @@
 </div>
 
 {#if showToast}
-	<div class="fixed top-4 left-1/2 z-50 -translate-x-1/2 animate-fade-in hidden lg:block rounded-lg border border-border/50 bg-card px-4 py-2.5 text-sm text-muted-foreground shadow-lg backdrop-blur-sm">
+	<div class="fixed top-4 left-1/2 z-50 -translate-x-1/2 animate-fade-in hidden lg:block rounded-lg border border-border bg-card px-4 py-2.5 text-sm text-foreground shadow-lg backdrop-blur-sm ring-1 ring-white/10 dark:bg-zinc-800 dark:border-zinc-600">
 		<kbd class="rounded border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-xs font-mono">?</kbd> 키로 단축키를 확인할 수 있습니다
 	</div>
 {/if}
