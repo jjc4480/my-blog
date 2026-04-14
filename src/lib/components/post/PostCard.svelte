@@ -15,7 +15,9 @@
 					alt={post.title}
 					loading="lazy"
 					decoding="async"
-					class="h-24 w-36 rounded-md object-cover"
+					width="144"
+				height="96"
+				class="h-24 w-36 rounded-md object-cover"
 				/>
 			</div>
 		{/if}
