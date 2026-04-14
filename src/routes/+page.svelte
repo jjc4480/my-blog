@@ -2,6 +2,7 @@
 	import PostList from '$lib/components/post/PostList.svelte';
 	import Pagination from '$lib/components/common/Pagination.svelte';
 	import SEO from '$lib/components/common/SEO.svelte';
+	import TagChip from '$lib/components/common/TagChip.svelte';
 	import JsonLD from '$lib/components/common/JsonLD.svelte';
 	import { siteConfig } from '$lib/config';
 	import { buildWebSiteSchema } from '$lib/seo';
@@ -42,12 +43,7 @@
 	<div class="mt-3 flex flex-wrap items-center gap-2">
 		<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">태그</span>
 		{#each data.tags as tag}
-			<a
-				href="/?tag={tag}"
-				class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors {data.activeTag === tag
-					? 'bg-primary text-primary-foreground'
-					: 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'}"
-			>{tag}</a>
+			<TagChip {tag} href="/?tag={tag}" active={data.activeTag === tag} />
 		{/each}
 	</div>
 </section>
