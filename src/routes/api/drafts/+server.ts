@@ -3,7 +3,7 @@ import { listPostFiles, getPostFile, putPostFile } from '$lib/server/github';
 import type { RequestHandler } from './$types';
 import { getEnv } from '$lib/server/env';
 import { dev } from '$app/environment';
-import { readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export const prerender = false;
@@ -163,8 +163,7 @@ export const GET: RequestHandler = async ({ locals, platform }) => {
 
 export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	const user = locals.user;
-	const repo = getEnv(platform).GITHUB_REPO;
-	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const body = await request.json();
 	const { title, slug, content: rawContent } = body;
@@ -185,7 +184,15 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		});
 		content = frontmatter + '\n';
 	}
-	await putPostFile(user.token, repo, slug, content, `draft: create ${slug}`);
 
+	if (dev && !user.token) {
+		const filePath = join(process.cwd(), 'content', 'posts', `${slug}.md`);
+		await writeFile(filePath, content, 'utf-8');
+		return json({ slug }, { status: 201 });
+	}
+
+	const repo = getEnv(platform).GITHUB_REPO;
+	if (!repo) return json({ error: 'Unauthorized' }, { status: 401 });
+	await putPostFile(user.token, repo, slug, content, `draft: create ${slug}`);
 	return json({ slug }, { status: 201 });
 };
