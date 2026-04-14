@@ -2,6 +2,9 @@ import { json } from '@sveltejs/kit';
 import { listPostFiles, getPostFile, putPostFile } from '$lib/server/github';
 import type { RequestHandler } from './$types';
 import { getEnv } from '$lib/server/env';
+import { dev } from '$app/environment';
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 export const prerender = false;
 
@@ -98,10 +101,33 @@ published: ${meta.published}
 `;
 }
 
+async function loadLocalDrafts() {
+	const postsDir = join(process.cwd(), 'content', 'posts');
+	const entries = await readdir(postsDir);
+	const drafts: { slug: string; title: string; date: string; category: string; tags: string[]; sha: string }[] = [];
+
+	for (const entry of entries) {
+		if (!entry.endsWith('.md')) continue;
+		const slug = entry.replace(/\.md$/, '');
+		const raw = await readFile(join(postsDir, entry), 'utf-8');
+		const parsed = parseFrontmatter(raw);
+		if (!parsed || parsed.data.published !== false) continue;
+		drafts.push({ slug, title: parsed.data.title, date: parsed.data.date, category: parsed.data.category, tags: parsed.data.tags, sha: '' });
+	}
+	return drafts;
+}
+
 export const GET: RequestHandler = async ({ locals, platform }) => {
 	const user = locals.user;
+	if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
+
+	if (dev && !user.token) {
+		const drafts = await loadLocalDrafts();
+		return json(drafts);
+	}
+
 	const repo = getEnv(platform).GITHUB_REPO;
-	if (!user || !repo) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!repo) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const files = await listPostFiles(user.token, repo);
 	const drafts: {
