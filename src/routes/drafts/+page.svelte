@@ -34,7 +34,7 @@
 		{#each drafts as draft (draft.slug)}
 			<div class="flex items-center justify-between rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/30">
 				<div class="min-w-0 flex-1">
-					<h2 class="text-sm font-medium truncate">{draft.title || draft.slug}</h2>
+					<a href="/drafts/{draft.slug}" class="text-sm font-medium truncate hover:underline">{draft.title || draft.slug}</a>
 					<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
 						<span>{draft.date}</span>
 						{#if draft.category}
