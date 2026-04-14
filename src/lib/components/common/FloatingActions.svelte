@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { isDark, toggleTheme as toggle, onThemeChange } from '$lib/stores/theme';
 	import ShortcutsModal from './ShortcutsModal.svelte';
 
 	let showScrollTop = $state(false);
 	let showToast = $state(false);
 	let shortcutsOpen = $state(false);
-	let dark = $state(false);
+	let dark = $state(isDark());
 
-	if (browser) {
-		dark = document.documentElement.classList.contains('dark');
-	}
+	$effect(() => {
+		return onThemeChange(() => { dark = isDark(); });
+	});
 
 	$effect(() => {
 		if (!browser) return;
@@ -35,13 +36,7 @@
 		}
 	}
 
-	function toggleTheme() {
-		dark = !dark;
-		if (browser) {
-			document.documentElement.classList.toggle('dark', dark);
-			localStorage.setItem('theme', dark ? 'dark' : 'light');
-		}
-	}
+	function toggleTheme() { toggle(); dark = isDark(); }
 
 	$effect(() => {
 		if (!browser) return;
