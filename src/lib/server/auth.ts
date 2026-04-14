@@ -1,11 +1,12 @@
 const GITHUB_AUTHORIZE = 'https://github.com/login/oauth/access_token';
 const GITHUB_API = 'https://api.github.com';
 
-export function getGitHubAuthUrl(clientId: string, redirectUri: string): string {
+export function getGitHubAuthUrl(clientId: string, redirectUri: string, state: string): string {
 	const params = new URLSearchParams({
 		client_id: clientId,
 		redirect_uri: redirectUri,
-		scope: 'repo read:user'
+		scope: 'repo read:user',
+		state
 	});
 	return `https://github.com/login/oauth/authorize?${params}`;
 }
@@ -57,4 +58,9 @@ export async function getGitHubUser(token: string): Promise<{ login: string }> {
 
 	const data: { login: string } = await res.json();
 	return { login: data.login };
+}
+
+export function generateOAuthState(): string {
+	const bytes = crypto.getRandomValues(new Uint8Array(32));
+	return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }

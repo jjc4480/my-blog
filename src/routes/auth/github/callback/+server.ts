@@ -22,6 +22,13 @@ export const GET: RequestHandler = async ({ url, platform, cookies }) => {
 		error(400, 'Missing authorization code');
 	}
 
+	const state = url.searchParams.get('state');
+	const savedState = cookies.get('oauth_state');
+	cookies.delete('oauth_state', { path: '/auth/github/callback' });
+	if (!state || !savedState || state !== savedState) {
+		error(403, 'Invalid OAuth state');
+	}
+
 	try {
 		const accessToken = await exchangeCodeForToken(code, env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET);
 		const { login } = await getGitHubUser(accessToken);
