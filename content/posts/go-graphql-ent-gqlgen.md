@@ -314,7 +314,7 @@ func (Todo) Fields() []ent.Field {
 
 ## N+1 문제 해결
 
-GraphQL의 고질적 문제인 N+1을 entgql은 **필드 컬렉션**으로 해결한다. 클라이언트가 요청한 필드를 분석해서, 필요한 edge를 자동으로 eager-loading한다.
+GraphQL의 고질적 문제인 N+1을 entgql은 **필드 컬렉션**으로 완화한다. 클라이언트가 요청한 필드를 분석해서, 필요한 edge를 자동으로 eager-loading한다.
 
 ```graphql
 query {
@@ -331,7 +331,7 @@ query {
 }
 ```
 
-이 쿼리를 실행하면 entgql이 내부적으로 `WithChildren()` eager-load를 추가한다. 결과적으로 DB 쿼리는 2개다. todo 목록 1번, children 목록 1번. DataLoader 없이 N+1이 해결된다.
+이 쿼리를 실행하면 entgql이 내부적으로 `WithChildren()` eager-load를 추가한다. 결과적으로 DB 쿼리는 2개다. todo 목록 1번, children 목록 1번. 1-depth edge에서는 DataLoader 없이 N+1이 해결된다. 다만 깊은 중첩 관계에서는 여전히 추가 최적화가 필요할 수 있다.
 
 ## 트랜잭셔널 뮤테이션
 
