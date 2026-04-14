@@ -15,11 +15,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 	const perPage = siteConfig.postsPerPage;
 	const totalPages = Math.ceil(filtered.length / perPage);
-	const paginatedPosts = filtered.slice((page - 1) * perPage, page * perPage);
+	const safePage = page > totalPages ? 1 : page;
+	const paginatedPosts = filtered.slice((safePage - 1) * perPage, safePage * perPage);
 
 	return {
 		posts: paginatedPosts,
-		currentPage: page,
+		currentPage: safePage,
 		totalPages,
 		categories: getCategories(allPosts),
 		tags: getTags(allPosts),

@@ -21,6 +21,8 @@ ${recent.map((p) => `<item>
 <link>${siteConfig.url}/blog/${p.slug}</link>
 <guid isPermaLink="true">${siteConfig.url}/blog/${p.slug}</guid>
 <pubDate>${new Date(p.date).toUTCString()}</pubDate>
+<author>${esc(siteConfig.author.email)} (${esc(siteConfig.author.name)})</author>
+<category>${esc(p.category)}</category>
 </item>`).join('\n')}
 </channel>
 </rss>`;

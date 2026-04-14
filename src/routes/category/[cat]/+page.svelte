@@ -14,7 +14,7 @@
 	}));
 </script>
 
-<SEO title={data.category} description="{data.category} 카테고리의 포스트" />
+<SEO title={data.category} description="{data.category} 카테고리의 포스트" canonicalUrl="{siteConfig.url}/category/{data.category}" />
 <JsonLD {schema} />
 
 <section>

@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /drafts/
+Disallow: /auth/
 
-Sitemap: https://blog.jcjang.dev/sitemap.xml
+Sitemap: https://jcjang-blog.pages.dev/sitemap.xml

@@ -91,10 +91,11 @@
 		onkeydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
-		aria-labelledby="search-input"
+		aria-label="검색"
 	>
 		<div class="flex items-center gap-3 border-b border-border/50 px-4 py-3">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			<label for="search-input" class="sr-only">검색어 입력</label>
 			<input
 				id="search-input"
 				bind:this={inputEl}

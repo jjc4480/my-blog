@@ -9,10 +9,18 @@ export interface SearchPost {
 	category: string;
 	date: string;
 	body: string;
+	code: string;
 }
 
 export interface SearchData {
 	posts: SearchPost[];
+}
+
+function extractCode(md: string): string {
+	const blocks: string[] = [];
+	md.replace(/```[\w]*\n([\s\S]*?)```/g, (_, code) => { blocks.push(code); return ''; });
+	md.replace(/`([^`]+)`/g, (_, code) => { blocks.push(code); return ''; });
+	return blocks.join(' ');
 }
 
 function stripMarkdown(md: string): string {
@@ -41,7 +49,8 @@ export function buildSearchData(posts: Post[], rawContents: Record<string, strin
 			tags: p.tags,
 			category: p.category,
 			date: p.date,
-			body: stripMarkdown(rawContents[p.slug] ?? '')
+			body: stripMarkdown(rawContents[p.slug] ?? ''),
+			code: extractCode(rawContents[p.slug] ?? '')
 		}))
 	};
 }
@@ -50,6 +59,7 @@ export class SearchEngine {
 	private titleIndex: FlexSearch.Index;
 	private descIndex: FlexSearch.Index;
 	private bodyIndex: FlexSearch.Index;
+	private codeIndex: FlexSearch.Index;
 	private posts: SearchPost[] = [];
 
 	constructor() {
@@ -57,6 +67,7 @@ export class SearchEngine {
 		this.titleIndex = new FlexSearch.Index(opts);
 		this.descIndex = new FlexSearch.Index(opts);
 		this.bodyIndex = new FlexSearch.Index(opts);
+		this.codeIndex = new FlexSearch.Index(opts);
 	}
 
 	load(data: SearchData) {
@@ -66,6 +77,7 @@ export class SearchEngine {
 			this.titleIndex.add(i, p.title);
 			this.descIndex.add(i, `${p.description} ${p.tags.join(' ')} ${p.category}`);
 			this.bodyIndex.add(i, p.body);
+			this.codeIndex.add(i, p.code);
 		}
 	}
 
@@ -75,11 +87,13 @@ export class SearchEngine {
 		const titleHits = new Set(this.titleIndex.search(query, { limit }) as number[]);
 		const descHits = new Set(this.descIndex.search(query, { limit }) as number[]);
 		const bodyHits = new Set(this.bodyIndex.search(query, { limit }) as number[]);
+		const codeHits = new Set(this.codeIndex.search(query, { limit }) as number[]);
 
 		const scores = new Map<number, number>();
-		for (const i of titleHits) scores.set(i, (scores.get(i) ?? 0) + 10);
+		for (const i of titleHits) scores.set(i, (scores.get(i) ?? 0) + 100);
 		for (const i of descHits) scores.set(i, (scores.get(i) ?? 0) + 5);
 		for (const i of bodyHits) scores.set(i, (scores.get(i) ?? 0) + 1);
+		for (const i of codeHits) scores.set(i, (scores.get(i) ?? 0) + 0.5);
 
 		return [...scores.entries()]
 			.sort((a, b) => b[1] - a[1])

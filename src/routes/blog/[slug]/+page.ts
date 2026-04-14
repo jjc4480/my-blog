@@ -34,6 +34,22 @@ export const load: PageLoad = async ({ params }) => {
 	const prevPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 	const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 
+	const currentTags = (metadata.tags as string[]) ?? [];
+	const relatedPosts = Object.entries(modules)
+		.map(([p, m]) => {
+			const mod = m as { metadata: Record<string, unknown> };
+			if (!mod.metadata || mod.metadata.published === false || mod.metadata.secret) return null;
+			const s = p.split('/').pop()?.replace('.md', '') ?? '';
+			if (s === params.slug) return null;
+			const tags = (mod.metadata.tags as string[]) ?? [];
+			const shared = tags.filter(t => currentTags.includes(t)).length;
+			if (shared < 1) return null;
+			return { slug: s, title: mod.metadata.title as string, date: mod.metadata.date as string, shared };
+		})
+		.filter(Boolean)
+		.sort((a, b) => b!.shared - a!.shared || new Date(b!.date).getTime() - new Date(a!.date).getTime())
+		.slice(0, 3) as Array<{ slug: string; title: string; date: string }>;
+
 	return {
 		title: metadata.title as string,
 		date: metadata.date as string,
@@ -45,6 +61,7 @@ export const load: PageLoad = async ({ params }) => {
 		readingTime,
 		prevPost,
 		nextPost,
-		Content: module.default
+		Content: module.default,
+		relatedPosts
 	};
 };

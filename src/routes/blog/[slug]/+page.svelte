@@ -6,7 +6,7 @@
 	import JsonLD from '$lib/components/common/JsonLD.svelte';
 	import TOC from '$lib/components/post/TOC.svelte';
 	import { siteConfig } from '$lib/config';
-	import { buildArticleSchema } from '$lib/seo';
+	import { buildArticleSchema, buildBreadcrumbSchema } from '$lib/seo';
 	import { formatDate } from '$lib/utils';
 
 	let { data } = $props();
@@ -23,6 +23,12 @@
 	interface TocItem { id: string; text: string; level: number; }
 	let headings: TocItem[] = $state([]);
 	let readingProgress = $state(0);
+
+	const breadcrumbSchema = $derived(buildBreadcrumbSchema([
+		{ name: '홈', url: siteConfig.url },
+		{ name: data.category, url: `${siteConfig.url}/category/${data.category}` },
+		{ name: data.title, url: `${siteConfig.url}/blog/${data.slug}` }
+	]));
 
 	const articleSchema = $derived(buildArticleSchema({
 		title: data.title,
@@ -140,6 +146,7 @@
 	canonicalUrl="{siteConfig.url}/blog/{data.slug}"
 />
 <JsonLD schema={articleSchema} />
+<JsonLD schema={breadcrumbSchema} />
 
 <div class="fixed top-0 left-0 z-50 h-0.5 bg-primary transition-all duration-150" style="width: {readingProgress}%"></div>
 
@@ -200,6 +207,19 @@
 			</a>
 		{/if}
 	</nav>
+
+	{#if data.relatedPosts?.length > 0}
+		<section class="mt-12 border-t border-border/50 pt-8">
+			<h2 class="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">관련 글</h2>
+			<div class="grid gap-3 sm:grid-cols-3">
+				{#each data.relatedPosts as rp}
+					<a href="/blog/{rp.slug}" class="group rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/40">
+						<span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">{rp.title}</span>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
 {/if}
 </article>
 

@@ -14,7 +14,7 @@
 	}));
 </script>
 
-<SEO title="#{data.tag}" description="{data.tag} 태그의 포스트" />
+<SEO title="#{data.tag}" canonicalUrl="{siteConfig.url}/tags/{data.tag}" description="{data.tag} 태그의 포스트" />
 <JsonLD {schema} />
 
 <section>
