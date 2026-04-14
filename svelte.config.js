@@ -29,7 +29,7 @@ const config = {
 							dark: 'github-dark'
 						}
 					});
-					return `{@html \`${html.replace(/`/g, '\\`')}\`}`;
+					return `{@html \`${html.replace(/`/g, '\\`').replace(/\{/g, '&#123;').replace(/\}/g, '&#125;')}\`}`;
 				}
 			}
 		})
