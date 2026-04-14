@@ -16,7 +16,7 @@ ent, gqlgen, entgql 조합은 이 문제를 **코드 생성**으로 해결한다
 
 ## 세 가지 도구, 각자의 역할
 
-### ent — 스키마가 곧 코드
+### ent: 스키마가 곧 코드
 
 [ent](https://entgo.io)는 Go용 엔티티 프레임워크다. GORM이나 sqlx와 달리 **스키마를 Go 코드로 정의**하고, 거기서 타입 안전한 CRUD 코드를 생성한다.
 
@@ -58,16 +58,16 @@ func (Todo) Edges() []ent.Edge {
 
 `go generate`를 실행하면 `ent/` 디렉토리에 타입 안전한 클라이언트 코드가 생성된다. `client.Todo.Create().SetText("할 일").Save(ctx)` 같은 빌더 패턴으로 DB를 조작한다. SQL을 직접 쓸 일이 거의 없다.
 
-핵심은 **스키마가 단일 진실 공급원(Single Source of Truth)**이라는 점이다. 필드 타입, 유효성 검사, 관계 — 모든 게 이 스키마 파일에서 나온다.
+핵심은 **스키마가 단일 진실 공급원(Single Source of Truth)**이라는 점이다. 필드 타입, 유효성 검사, 관계. 모든 게 이 스키마 파일에서 나온다.
 
-### gqlgen — 스키마 퍼스트 GraphQL
+### gqlgen: 스키마 퍼스트 GraphQL
 
 [gqlgen](https://gqlgen.com)은 Go의 GraphQL 서버 라이브러리다. graphql-go나 다른 대안도 있지만, gqlgen이 Go 생태계에서 사실상 표준이다.
 
 핵심 특징:
-- **스키마 퍼스트** — `.graphql` 파일에 스키마를 먼저 정의하고, 거기서 Go 코드를 생성한다
-- **타입 안전** — 생성된 resolver 인터페이스가 컴파일 타임에 타입을 보장한다
-- **autobind** — Go 타입과 GraphQL 타입이 이름이 같으면 자동으로 바인딩된다
+- **스키마 퍼스트:** `.graphql` 파일에 스키마를 먼저 정의하고, 거기서 Go 코드를 생성한다
+- **타입 안전:** 생성된 resolver 인터페이스가 컴파일 타임에 타입을 보장한다
+- **autobind:** Go 타입과 GraphQL 타입이 이름이 같으면 자동으로 바인딩된다
 
 ```yaml
 # gqlgen.yml
@@ -92,7 +92,7 @@ models:
       - myapp/ent.Noder
 ```
 
-### entgql — 둘을 잇는 브릿지
+### entgql: 둘을 잇는 브릿지
 
 [entgql](https://pkg.go.dev/entgo.io/contrib/entgql)은 ent와 gqlgen 사이의 접착제다. ent 스키마에 어노테이션을 붙이면:
 
@@ -106,7 +106,7 @@ models:
 
 ## 실전: 프로젝트 셋업
 
-### 1단계 — ent 스키마에 GraphQL 어노테이션 추가
+### 1단계: ent 스키마에 GraphQL 어노테이션 추가
 
 ```go
 // ent/schema/todo.go
@@ -123,7 +123,7 @@ func (Todo) Annotations() []schema.Annotation {
 
 `entgql.QueryField()`는 Query 타입에 `todos` 필드를 추가하고, `entgql.Mutations(entgql.MutationCreate())`는 `createTodo` 뮤테이션을 만든다.
 
-### 2단계 — entgql 확장 설정
+### 2단계: entgql 확장 설정
 
 ```go
 // ent/entc.go
@@ -158,7 +158,7 @@ func main() {
 
 `WithSchemaGenerator()`가 ent 스키마를 읽어서 `ent.graphql` 파일을 생성한다. `WithConfigPath`로 gqlgen 설정 파일 위치를 알려주면, 코드 생성 시 gqlgen과의 타입 바인딩도 자동으로 처리된다.
 
-### 3단계 — 코드 생성 실행
+### 3단계: 코드 생성 실행
 
 ```go
 // generate.go
@@ -177,7 +177,7 @@ go generate .
 - entgql이 GraphQL 스키마(`ent.graphql`)를 생성하고
 - gqlgen이 resolver 인터페이스와 타입 바인딩 코드를 생성한다
 
-### 4단계 — Resolver 구현
+### 4단계: Resolver 구현
 
 생성된 resolver는 거의 한 줄이다.
 
@@ -196,7 +196,7 @@ func (r *queryResolver) Todos(
 }
 ```
 
-페이지네이션, 정렬, 커서 처리 — 전부 `Paginate` 메서드 하나에 담겨 있다. 직접 구현했다면 수백 줄은 됐을 로직이다.
+페이지네이션, 정렬, 커서 처리. 전부 `Paginate` 메서드 하나에 담겨 있다. 직접 구현했다면 수백 줄은 됐을 로직이다.
 
 뮤테이션도 마찬가지:
 
@@ -216,9 +216,9 @@ func (r *mutationResolver) CreateTodo(
 
 전통적인 페이지네이션은 `LIMIT 20 OFFSET 40` 같은 방식이다. 간단하지만 문제가 있다.
 
-- **데이터 변경에 취약하다** — 2페이지를 보는 도중 새 데이터가 추가되면 3페이지에서 이전에 본 항목이 다시 나온다
-- **성능이 선형 저하된다** — `OFFSET 10000`은 DB가 10000행을 읽고 버린다는 뜻이다
-- **무한 스크롤에 부적합하다** — 모바일 앱이나 실시간 피드에서는 "몇 페이지"라는 개념 자체가 맞지 않다
+- **데이터 변경에 취약하다.** 2페이지를 보는 도중 새 데이터가 추가되면 3페이지에서 이전에 본 항목이 다시 나온다
+- **성능이 선형 저하된다.** `OFFSET 10000`은 DB가 10000행을 읽고 버린다는 뜻이다
+- **무한 스크롤에 부적합하다.** 모바일 앱이나 실시간 피드에서는 "몇 페이지"라는 개념 자체가 맞지 않다
 
 ### cursor 기반 페이지네이션
 
@@ -331,7 +331,7 @@ query {
 }
 ```
 
-이 쿼리를 실행하면 entgql이 내부적으로 `WithChildren()` eager-load를 추가한다. 결과적으로 DB 쿼리는 2개 — todo 목록 1번, children 목록 1번. DataLoader 없이 N+1이 해결된다.
+이 쿼리를 실행하면 entgql이 내부적으로 `WithChildren()` eager-load를 추가한다. 결과적으로 DB 쿼리는 2개다. todo 목록 1번, children 목록 1번. DataLoader 없이 N+1이 해결된다.
 
 ## 트랜잭셔널 뮤테이션
 
