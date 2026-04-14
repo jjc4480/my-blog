@@ -6,6 +6,13 @@ import { dev } from '$app/environment';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+
+const SLUG_PATTERN = /^[a-z0-9가-힣](?:[a-z0-9가-힣-]*[a-z0-9가-힣])?$/i;
+
+function validateSlug(slug: string): boolean {
+	return SLUG_PATTERN.test(slug) && !slug.includes('..');
+}
+
 export const prerender = false;
 
 interface FrontmatterData {
@@ -168,6 +175,7 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	const body = await request.json();
 	const { title, slug, content: rawContent } = body;
 	if (!title || !slug) return json({ error: 'title and slug required' }, { status: 400 });
+	if (!validateSlug(slug)) return json({ error: 'Invalid slug' }, { status: 400 });
 
 	let content: string;
 	if (rawContent) {

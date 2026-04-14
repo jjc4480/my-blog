@@ -6,9 +6,18 @@ import { dev } from '$app/environment';
 import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 
+
+const SLUG_PATTERN = /^[a-z0-9가-힣](?:[a-z0-9가-힣-]*[a-z0-9가-힣])?$/i;
+
+function validateSlug(slug: string): boolean {
+	return SLUG_PATTERN.test(slug) && !slug.includes('..');
+}
+
 export const prerender = false;
 
 export const GET: RequestHandler = async ({ params, locals, platform }) => {
+	if (!validateSlug(params.slug)) return json({ error: 'Invalid slug' }, { status: 400 });
+
 	const user = locals.user;
 	if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -25,6 +34,8 @@ export const GET: RequestHandler = async ({ params, locals, platform }) => {
 };
 
 export const PUT: RequestHandler = async ({ params, request, locals, platform }) => {
+	if (!validateSlug(params.slug)) return json({ error: 'Invalid slug' }, { status: 400 });
+
 	const user = locals.user;
 	if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -46,6 +57,8 @@ export const PUT: RequestHandler = async ({ params, request, locals, platform })
 };
 
 export const DELETE: RequestHandler = async ({ params, request, locals, platform }) => {
+	if (!validateSlug(params.slug)) return json({ error: 'Invalid slug' }, { status: 400 });
+
 	const user = locals.user;
 	if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
