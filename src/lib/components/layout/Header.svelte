@@ -177,6 +177,18 @@
 				{label}
 			</a>
 		{/each}
+		{#if tags.length > 0}
+			<div class="border-t border-border/50 mt-3 pt-3">
+				<p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">태그</p>
+				<div class="flex flex-wrap gap-1.5 px-3">
+					{#each tags as tag}
+						<a href="/tags/{tag}" onclick={closeMobile}>
+							<TagChip {tag} />
+						</a>
+					{/each}
+				</div>
+			</div>
+		{/if}
 	</nav>
 {/if}
 
