@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ url, platform, cookies }) => {
 		const { login } = await getGitHubUser(accessToken);
 
 		if (env.ALLOWED_GITHUB_USER && login !== env.ALLOWED_GITHUB_USER) {
-			error(403, `Unauthorized user: ${login}`);
+			error(403, 'Unauthorized');
 		}
 
 		const session = await createSessionCookie(login, accessToken, env.SESSION_SECRET);
@@ -43,7 +43,8 @@ export const GET: RequestHandler = async ({ url, platform, cookies }) => {
 		redirect(302, '/');
 	} catch (e: any) {
 		if (e?.status) throw e;
-		return new Response(JSON.stringify({ error: e.message }), {
+		console.error('OAuth callback error:', e);
+		return new Response(JSON.stringify({ error: 'Authentication failed' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});
