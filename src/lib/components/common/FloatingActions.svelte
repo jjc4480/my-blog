@@ -54,7 +54,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="fixed bottom-6 right-6 z-30 flex flex-col items-center gap-2">
+<div class="fixed bottom-20 right-4 z-30 flex flex-col items-center gap-2 sm:bottom-6 sm:right-6">
 	{#if showScrollTop}
 		<button
 			onclick={scrollToTop}
