@@ -1,6 +1,6 @@
 import { redirect, error } from '@sveltejs/kit';
 import { exchangeCodeForToken, getGitHubUser } from '$lib/server/auth';
-import { createSessionCookie } from '$lib/server/session';
+import { createSessionCookie, clearSessionCookie } from '$lib/server/session';
 import { getEnv } from '$lib/server/env';
 import type { RequestHandler } from './$types';
 
@@ -36,6 +36,9 @@ export const GET: RequestHandler = async ({ url, platform, cookies }) => {
 		if (env.ALLOWED_GITHUB_USER && login !== env.ALLOWED_GITHUB_USER) {
 			error(403, 'Unauthorized');
 		}
+
+		const cleared = clearSessionCookie();
+		cookies.set(cleared.name, cleared.value, cleared.options as Parameters<typeof cookies.set>[2]);
 
 		const session = await createSessionCookie(login, accessToken, env.SESSION_SECRET);
 		cookies.set(session.name, session.value, session.options as Parameters<typeof cookies.set>[2]);
