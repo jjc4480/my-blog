@@ -31,7 +31,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		redirect(302, '/auth/github');
 	}
 
-	if (isProtected && pathname.startsWith('/api/') && !event.locals.user?.token && !dev) {
+	if (isProtected && pathname.startsWith('/api/') && event.locals.user && !event.locals.user.token && !dev) {
 		return json({ error: 'NoToken' }, { status: 401 });
 	}
 
