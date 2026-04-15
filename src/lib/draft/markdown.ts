@@ -25,5 +25,7 @@ export async function renderMarkdown(source: string): Promise<string> {
 		}
 	});
 
-	return await marked.parse(source);
+	let html = await marked.parse(source);
+	html = html.replace(/<\/?thead>|<\/?tbody>/g, '');
+	return html;
 }

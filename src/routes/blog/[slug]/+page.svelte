@@ -12,6 +12,7 @@
 	let { data } = $props();
 	let isAdmin = $state(false);
 	let authChecked = $state(false);
+	let seriesOpen = $state(true);
 
 	$effect(() => {
 		fetch('/api/me').then(r => r.json()).then(u => {
@@ -204,6 +205,64 @@
 		<p class="mt-2 text-sm text-muted-foreground/70">이 글은 관리자만 열람할 수 있습니다.</p>
 	</div>
 {:else}
+	{#if data.series && data.seriesPosts.length > 1}
+		<div class="mb-8 rounded-lg border border-border/50 bg-secondary/30">
+			<button
+				onclick={() => seriesOpen = !seriesOpen}
+				class="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors rounded-lg"
+			>
+				<span class="flex items-center gap-2">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+					시리즈: {data.series}
+					<span class="text-xs text-muted-foreground">({data.seriesPosts.length}편)</span>
+				</span>
+				<svg
+					xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+					class="transition-transform duration-200 {seriesOpen ? 'rotate-180' : ''}"
+				><path d="m6 9 6 6 6-6"/></svg>
+			</button>
+			{#if seriesOpen}
+				<div class="border-t border-border/30 px-4 py-2">
+					<ol class="space-y-0.5">
+						{#each data.seriesPosts as sp, i}
+							{#if sp.slug === data.slug}
+								<li class="flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary">
+									<span class="text-xs text-primary/60">{i + 1}.</span>
+									{sp.title}
+								</li>
+							{:else}
+								<li>
+									<a href="/blog/{sp.slug}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
+										<span class="text-xs text-muted-foreground/60">{i + 1}.</span>
+										{sp.title}
+									</a>
+								</li>
+							{/if}
+						{/each}
+					</ol>
+				</div>
+				{#if data.prevSeriesPost || data.nextSeriesPost}
+					<div class="flex items-center justify-between border-t border-border/30 px-4 py-2.5 text-sm">
+						{#if data.prevSeriesPost}
+							<a href="/blog/{data.prevSeriesPost.slug}" class="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+								이전편
+							</a>
+						{:else}
+							<div></div>
+						{/if}
+						{#if data.nextSeriesPost}
+							<a href="/blog/{data.nextSeriesPost.slug}" class="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+								다음편
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+							</a>
+						{/if}
+					</div>
+				{/if}
+			{/if}
+		</div>
+	{/if}
+
 	<div class="prose prose-neutral dark:prose-invert max-w-none leading-[1.8]">
 		<Content />
 	</div>

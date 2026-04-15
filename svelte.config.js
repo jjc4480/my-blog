@@ -42,6 +42,9 @@ const config = {
 		}
 	},
 	kit: {
+		prerender: {
+			handleHttpError: 'warn'
+		},
 		adapter: adapter({
 			routes: {
 				include: ['/*'],

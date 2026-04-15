@@ -5,7 +5,8 @@ export const siteConfig = {
 	author: {
 		name: 'jcjang',
 		bio: '웹 기술 전반을 좋아하는 개발자. 요즘은 AI와 Agent에도 관심을 가지고 있습니다.',
-		email: 'jongchangjang90@gmail.com'
+		email: 'jongchangjang90@gmail.com',
+		twitter: '@jcjang90'
 	},
 	defaultOgImage: '/og-default.png',
 	locale: 'ko_KR',

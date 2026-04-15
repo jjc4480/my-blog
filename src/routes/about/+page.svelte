@@ -1,8 +1,10 @@
 <script lang="ts">
-	import SEO from '$lib/components/common/SEO.svelte';
+	import { siteConfig } from '$lib/config';
+import SEO from '$lib/components/common/SEO.svelte';
 </script>
 
-<SEO title="About" description="jcjang 블로그 소개" />
+<SEO title="About" description="jcjang 블로그 소개" 
+	canonicalUrl="{siteConfig.url}/about"/>
 
 <article class="prose prose-neutral dark:prose-invert max-w-none">
 	<h1>About</h1>

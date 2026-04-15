@@ -5,8 +5,11 @@
 	import Link from '@tiptap/extension-link';
 	import Placeholder from '@tiptap/extension-placeholder';
 	import Image from '@tiptap/extension-image';
+	import { TableKit } from '@tiptap/extension-table';
 	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 	import { common, createLowlight } from 'lowlight';
+	import 'highlight.js/styles/github.css';
+	import 'highlight.js/styles/github-dark.css';
 
 	interface Props {
 		content: string;
@@ -26,10 +29,14 @@
 			element,
 			extensions: [
 				StarterKit.configure({ codeBlock: false }),
-				CodeBlockLowlight.configure({ lowlight }),
+				CodeBlockLowlight.configure({
+					lowlight,
+					HTMLAttributes: { class: 'hljs' }
+				}),
 				Link.configure({ openOnClick: false }),
 				Placeholder.configure({ placeholder: '\uBCF8\uBB38\uC744 \uC791\uC131\uD558\uC138\uC694...' }),
-				Image
+				Image,
+				TableKit.configure({ resizable: false })
 			],
 			content,
 			editorProps: {
@@ -129,9 +136,25 @@
 		pointer-events: none;
 		height: 0;
 	}
+	
+	:global(.ProseMirror table) {
+		border-collapse: collapse;
+		width: 100%;
+		margin: 1rem 0;
+	}
+	:global(.ProseMirror th),
+	:global(.ProseMirror td) {
+		border: 1px solid var(--border);
+		padding: 0.5rem 0.75rem;
+		text-align: left;
+	}
+	:global(.ProseMirror th) {
+		background: var(--muted);
+		font-weight: 600;
+	}
 	:global(.ProseMirror pre) {
 		background: var(--code-bg);
-		color: var(--code-text);
+		
 		border-radius: 0.5rem;
 		padding: 1rem;
 		overflow-x: auto;

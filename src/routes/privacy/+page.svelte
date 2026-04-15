@@ -1,8 +1,10 @@
 <script lang="ts">
-	import SEO from '$lib/components/common/SEO.svelte';
+	import { siteConfig } from '$lib/config';
+import SEO from '$lib/components/common/SEO.svelte';
 </script>
 
-<SEO title="개인정보처리방침" description="개인정보처리방침" />
+<SEO title="개인정보처리방침" description="개인정보처리방침" 
+	canonicalUrl="{siteConfig.url}/privacy"/>
 
 <article class="prose prose-neutral dark:prose-invert max-w-none">
 	<h1>개인정보처리방침</h1>

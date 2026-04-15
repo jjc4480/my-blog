@@ -3,6 +3,7 @@ import { listPostFiles, getPostFile, putPostFile } from '$lib/server/github';
 import type { RequestHandler } from './$types';
 import { getEnv } from '$lib/server/env';
 import { dev } from '$app/environment';
+import { parseFrontmatter } from '$lib/content/frontmatter';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -15,77 +16,6 @@ function validateSlug(slug: string): boolean {
 
 export const prerender = false;
 
-interface FrontmatterData {
-	title: string;
-	date: string;
-	category: string;
-	tags: string[];
-	description: string;
-	published: boolean;
-}
-
-function parseFrontmatter(raw: string): { data: FrontmatterData; body: string } | null {
-	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
-	if (!match) return null;
-
-	const yaml = match[1];
-	const body = match[2];
-
-	const data: Record<string, unknown> = {};
-	const lines = yaml.split('\n');
-	let currentKey = '';
-	let collectingArray = false;
-	const arrayItems: string[] = [];
-
-	for (const line of lines) {
-		const trimmed = line.trim();
-		if (!trimmed) continue;
-
-		if (collectingArray) {
-			if (trimmed.startsWith('- ')) {
-				arrayItems.push(trimmed.slice(2).trim().replace(/^['"]|['"]$/g, ''));
-				continue;
-			} else {
-				data[currentKey] = [...arrayItems];
-				arrayItems.length = 0;
-				collectingArray = false;
-			}
-		}
-
-		const kvMatch = trimmed.match(/^([a-zA-Z_]+)\s*:\s*(.*)$/);
-		if (kvMatch) {
-			currentKey = kvMatch[1];
-			const val = kvMatch[2].trim();
-			if (val === '') {
-				collectingArray = true;
-			} else if (val.startsWith('[') && val.endsWith(']')) {
-				data[currentKey] = val.slice(1, -1).split(',').map((s) => s.trim().replace(/^['"]|['"]$/g, ''));
-			} else if (val === 'true') {
-				data[currentKey] = true;
-			} else if (val === 'false') {
-				data[currentKey] = false;
-			} else {
-				data[currentKey] = val.replace(/^['"]|['"]$/g, '');
-			}
-		}
-	}
-
-	if (collectingArray) {
-		data[currentKey] = [...arrayItems];
-	}
-
-	return {
-		data: {
-			title: (data.title as string) ?? '',
-			date: (data.date as string) ?? '',
-			category: (data.category as string) ?? '',
-			tags: (data.tags as string[]) ?? [],
-			description: (data.description as string) ?? '',
-			published: (data.published as boolean) ?? false
-		},
-		body
-	};
-}
 
 function buildFrontmatter(meta: {
 	title: string;
