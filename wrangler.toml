@@ -5,7 +5,3 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 
 [vars]
 # Secrets are set via wrangler pages secret or Cloudflare dashboard
-
-[[kv_namespaces]]
-binding = "VIEWS_KV"
-id = "placeholder_replace_with_actual_kv_id"

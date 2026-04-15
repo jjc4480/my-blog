@@ -13,33 +13,12 @@
 	let isAdmin = $state(false);
 	let authChecked = $state(false);
 	let seriesOpen = $state(true);
-	let viewCount = $state<number | null>(null);
 
 	$effect(() => {
 		fetch('/api/me').then(r => r.json()).then(u => {
 			if (u?.login) isAdmin = true;
 			authChecked = true;
 		}).catch(() => { authChecked = true; });
-	});
-
-
-	$effect(() => {
-		if (!browser) return;
-		const slug = data.slug;
-		const sessionKey = `viewed:${slug}`;
-		const alreadyViewed = sessionStorage.getItem(sessionKey);
-
-		if (alreadyViewed) {
-			fetch(`/api/views/${slug}`).then(r => r.json()).then(d => { viewCount = d.views ?? null; }).catch(() => {});
-		} else {
-			fetch(`/api/views/${slug}`, { method: 'POST' })
-				.then(r => r.json())
-				.then(d => {
-					viewCount = d.views ?? null;
-					sessionStorage.setItem(sessionKey, '1');
-				})
-				.catch(() => {});
-		}
 	});
 
 	interface TocItem { id: string; text: string; level: number; }
@@ -199,10 +178,6 @@
 			<a href="/category/{data.category}" class="hover:text-foreground transition-colors">{data.category}</a>
 			<span>·</span>
 			<span>{data.readingTime}분 읽기</span>
-			{#if viewCount !== null}
-				<span>·</span>
-				<span>조회 {viewCount.toLocaleString()}</span>
-			{/if}
 			{#if data.secret && isAdmin}
 				<span>·</span>
 				<span class="inline-flex items-center gap-1 text-amber-500 text-xs font-medium">
