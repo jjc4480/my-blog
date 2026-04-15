@@ -12,7 +12,7 @@ export const GET: RequestHandler = async () => {
 
 	const urls = [
 		...staticPages.map((p) => `<url><loc>${siteConfig.url}${p}</loc></url>`),
-		...posts.map((p) => `<url><loc>${siteConfig.url}/blog/${p.slug}</loc><lastmod>${p.date}</lastmod></url>`),
+		...posts.map((p) => `<url><loc>${siteConfig.url}/blog/${p.slug}</loc><lastmod>${p.date.split("T")[0]}</lastmod></url>`),
 		...categories.map((c) => `<url><loc>${siteConfig.url}/category/${encodeURIComponent(c)}</loc></url>`),
 		...tags.map((t) => `<url><loc>${siteConfig.url}/tags/${encodeURIComponent(t)}</loc></url>`)
 	];
