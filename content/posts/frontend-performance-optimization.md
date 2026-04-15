@@ -223,7 +223,7 @@ import { Button } from './components'
 import { Button } from './components/Button'
 ```
 
-index.ts에서 모든 모듈을 한꺼번에 re-export하는 패턴은 편리하지만, 번들러가 안 쓰는 코드를 제거하는 걸 방해할 수 있다. 특히 import 시 부수 작용이 있는 모듈이 섞여 있으면, 사용하지 않는 코드까지 번들에 포함된다. `package.json`에 `"sideEffects": false`를 명시하면 개선되지만, 확실한 건 직접 경로로 import하는 것이다.
+index.ts에서 모든 모듈을 한꺼번에 re-export하는 패턴은 편리하지만, 번들러가 안 쓰는 코드를 제거하는 걸 방해할 수 있다. 특히 import 시 부수 작용이 있는 모듈이 섞여 있으면, 사용하지 않는 코드까지 번들에 포함된다. `package.json`에 `"sideEffects": false`를 명시하면 개선되지만, 확실한 건 직접 경로로 import하는 거다.
 
 ### 번들 분석
 
@@ -361,7 +361,7 @@ function throttle<T extends (...args: any[]) => void>(fn: T, limit: number) {
 window.addEventListener('scroll', throttle(updateParallaxPositions, 16))
 ```
 
-정리하면 debounce는 "연타 끝나면 실행", throttle은 "일정 주기로 실행". 이걸 반대로 쓰면 — 검색에 throttle 쓰면 타이핑 중에 불필요한 호출이 가고, 스크롤에 debounce 쓰면 끝나고 나서야 한 번 업데이트돼서 뚝뚝 끊긴다.
+정리하면 debounce는 "연타 끝나면 실행", throttle은 "일정 주기로 실행". 이걸 반대로 쓰면, 검색에 throttle 쓰면 타이핑 중에 불필요한 호출이 가고, 스크롤에 debounce 쓰면 끝나고 나서야 한 번 업데이트돼서 뚝뚝 끊긴다.
 ### passive listener
 
 ```typescript

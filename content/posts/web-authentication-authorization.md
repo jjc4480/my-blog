@@ -440,7 +440,7 @@ async function verifyIdToken(idToken: string) {
 | 발급 토큰 | Access Token | Access Token + ID Token |
 | 사용자 정보 | API 호출 필요 | ID Token에 포함 |
 
-"소셜 로그인"을 구현한다면 OIDC를 쓰는 것이다. OAuth2만으로는 "이 사람이 누구인지"를 표준적으로 알 수 없다.
+"소셜 로그인"을 구현한다면 OIDC를 쓰는 거다. OAuth2만으로는 "이 사람이 누구인지"를 표준적으로 알 수 없다.
 
 ## SSO & Keycloak
 
