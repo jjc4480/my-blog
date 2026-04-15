@@ -10,6 +10,7 @@ declare global {
 				GITHUB_REPO: string;
 				ALLOWED_GITHUB_USER: string;
 				SESSION_SECRET: string;
+				VIEWS_KV: KVNamespace;
 			};
 		}
 	}
