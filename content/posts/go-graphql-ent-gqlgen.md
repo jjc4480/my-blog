@@ -8,8 +8,6 @@ category: engineering
 published: true
 ---
 
-> **한 줄 요약:** ent 스키마 하나 정의하면 DB 마이그레이션, GraphQL 스키마, Relay 페이지네이션까지 자동 생성된다. 보일러플레이트를 줄이는 대신 생성 코드에 대한 이해가 필요하다.
-
 GraphQL API를 Go로 만들 때 가장 귀찮은 건 반복 코드다. DB 스키마 정의하고, GraphQL 스키마 정의하고, resolver 작성하고, 페이지네이션 로직 구현하고. 타입 하나 추가할 때마다 네 곳을 고쳐야 한다.
 
 ent, gqlgen, entgql 조합은 이 문제를 **코드 생성**으로 해결한다. ent 스키마 하나만 정의하면 나머지가 자동으로 따라온다. 이 글에서는 각 도구의 역할과 연결 방식, 그리고 Relay Connection 기반 페이지네이션까지 다룬다.
