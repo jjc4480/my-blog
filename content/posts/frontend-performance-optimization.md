@@ -112,7 +112,7 @@ function Parent() {
 
 ## 2. 이미지와 폰트 로딩
 
-이미지와 폰트는 LCP(Largest Contentful Paint)와 CLS(Cumulative Layout Shift)에 직접 영향을 주는 요소다. 포맷을 바꾸고 로딩 전략을 조정하는 것만으로 눈에 띄는 개선이 가능하다.
+이미지와 폰트는 페이지 로딩 속도와 화면 안정성에 직접 영향을 주는 요소다. 포맷을 바꾸고 로딩 전략을 조정하는 것만으로 눈에 띄는 개선이 가능하다.
 
 ### 이미지 포맷
 
@@ -142,11 +142,11 @@ JPEG을 기준으로 WebP는 25~35%, AVIF는 약 50%까지 용량을 줄인다. 
 <img src="below-fold.webp" loading="lazy" alt="..." width="800" height="400">
 ```
 
-주의할 점: `loading="lazy"`를 첫 화면 이미지에 걸면 오히려 LCP가 나빠진다. 브라우저가 뷰포트에 들어올 때까지 로딩을 미루기 때문이다. 첫 화면 이미지는 `eager`(기본값)를 유지하고, 가능하면 `preload`까지 걸어주는 게 맞다.
+주의할 점: `loading="lazy"`를 첫 화면 이미지에 걸면 오히려 로딩이 느려진다. 브라우저가 뷰포트에 들어올 때까지 로딩을 미루기 때문이다. 첫 화면 이미지는 `eager`(기본값)를 유지하고, 가능하면 `preload`까지 걸어주는 게 맞다.
 
 ### 폰트: FOIT 방지
 
-커스텀 폰트를 쓰면 폰트가 로드되기 전까지 텍스트가 안 보이는 현상(FOIT, Flash of Invisible Text)이 발생할 수 있다.
+커스텀 폰트를 쓰면 폰트가 로드되기 전까지 텍스트가 아예 안 보이는 현상이 발생할 수 있다.
 
 ```css
 /* Before: font-display 없으면 기본적으로 텍스트가 숨겨진다 */
@@ -168,11 +168,11 @@ JPEG을 기준으로 WebP는 25~35%, AVIF는 약 50%까지 용량을 줄인다. 
 <link rel="preload" href="myfont.woff2" as="font" type="font/woff2" crossorigin>
 ```
 
-`font-display: swap`은 폰트가 준비될 때까지 시스템 폰트를 보여준다. 텍스트가 잠깐 다른 모양으로 보이지만(FOUT), 안 보이는 것보다는 낫다.
+`font-display: swap`은 폰트가 준비될 때까지 시스템 폰트를 보여준다. 텍스트가 잠깐 다른 글꼴로 보이지만, 아예 안 보이는 것보다는 낫다.
 
 ## 3. 번들 사이즈
 
-번들이 크면 브라우저가 JavaScript를 파싱하고 실행하는 시간이 늘어난다. TTI(Time to Interactive)가 느려지는 직접적인 원인이다.
+번들이 크면 브라우저가 JavaScript를 해석하고 실행하는 시간이 늘어난다. 페이지가 뜨고 나서 실제로 조작할 수 있기까지의 시간이 느려지는 직접적인 원인이다.
 
 ### 동적 import
 
@@ -206,7 +206,7 @@ function App() {
 
 사용자가 `/dashboard`에 접속하면 Dashboard 코드만 받는다. Settings, Analytics는 해당 페이지에 갈 때 비로소 로드된다. 초기 번들이 40~60% 줄어드는 경우가 흔하다.
 
-### barrel export 주의
+### index.ts 일괄 export 주의
 
 ```typescript
 // components/index.ts (barrel export)
@@ -223,7 +223,7 @@ import { Button } from './components'
 import { Button } from './components/Button'
 ```
 
-barrel export(index.ts에서 모든 모듈을 re-export하는 패턴)는 편리하지만, 번들러의 tree shaking을 방해할 수 있다. 특히 사이드 이펙트가 있는 모듈이 섞여 있으면, 사용하지 않는 코드까지 번들에 포함된다. `package.json`에 `"sideEffects": false`를 명시하면 개선되지만, 확실한 건 직접 경로로 import하는 것이다.
+index.ts에서 모든 모듈을 한꺼번에 re-export하는 패턴은 편리하지만, 번들러가 안 쓰는 코드를 제거하는 걸 방해할 수 있다. 특히 import 시 부수 작용이 있는 모듈이 섞여 있으면, 사용하지 않는 코드까지 번들에 포함된다. `package.json`에 `"sideEffects": false`를 명시하면 개선되지만, 확실한 건 직접 경로로 import하는 것이다.
 
 ### 번들 분석
 
@@ -243,7 +243,7 @@ npm install @next/bundle-analyzer
 의외로 큰 비중을 차지하는 게 `moment.js`(288KB)나 `lodash`(72KB) 전체 import 같은 경우다. `date-fns`나 `lodash-es`로 바꾸면 수십 KB를 절약할 수 있다.
 ## 4. 레이아웃 쉬프트
 
-CLS(Cumulative Layout Shift)는 페이지 로드 중 요소가 갑자기 이동하는 정도를 측정하는 Core Web Vitals 지표다. 0.1 이하가 "양호". 기사를 읽는 도중 광고가 끼어들어 버튼 위치가 밀려나는 것, 그게 레이아웃 쉬프트다.
+레이아웃 쉬프트는 페이지가 로드되는 동안 요소가 갑자기 밀려나는 현상이다. 구글이 측정하는 웹 성능 지표 중 하나로, 0.1 이하면 "양호". 기사를 읽는 도중 광고가 끼어들어 버튼 위치가 밀려나는 것, 그게 레이아웃 쉬프트다.
 
 ### 이미지 크기 지정
 
@@ -325,7 +325,7 @@ input.addEventListener('input', (e) => {
 })
 
 // After: 입력이 멈춘 후 300ms 뒤에 한 번만 호출
-function debounce(fn: Function, delay: number) {
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
   let timer: ReturnType<typeof setTimeout>
   return (...args: any[]) => {
     clearTimeout(timer)
@@ -347,7 +347,7 @@ window.addEventListener('scroll', () => {
 })
 
 // After: 최대 60fps로 제한
-function throttle(fn: Function, limit: number) {
+function throttle<T extends (...args: any[]) => void>(fn: T, limit: number) {
   let lastRun = 0
   return (...args: any[]) => {
     const now = Date.now()
@@ -408,13 +408,13 @@ window.addEventListener('scroll', () => {
 Layout (CPU) → Paint (CPU) → Composite (GPU)
 ```
 
-어떤 CSS 속성을 바꾸느냐에 따라 세 단계를 전부 탈 수도 있고, GPU의 Composite만 탈 수도 있다.
+어떤 CSS 속성을 바꾸느냐에 따라 세 단계를 전부 거칠 수도 있고, 마지막 합성 단계만 거칠 수도 있다.
 
 | 단계 | 비용 | 트리거하는 속성 |
 |---|---|---|
 | Layout | 높음 | width, height, top, left, margin, padding |
 | Paint | 중간 | color, background, border, box-shadow |
-| Composite | 낮음 | transform, opacity |
+| 합성(GPU) | 낮음 | transform, opacity |
 
 ### CSS: transform vs top/left
 
@@ -463,7 +463,7 @@ Layout (CPU) → Paint (CPU) → Composite (GPU)
 }
 ```
 
-`will-change`는 브라우저에게 "이 요소가 곧 변할 거다"라고 알려주는 힌트다. GPU가 전용 합성 레이어를 미리 만들어둔다. 하지만 모든 요소에 남발하면 GPU 메모리를 낭비한다. 실제로 애니메이션이 일어나는 요소에만, 필요한 시점에만 적용해야 한다.
+`will-change`는 브라우저에게 "이 요소가 곧 변할 거다"라고 알려주는 힌트다. GPU가 해당 요소를 위한 별도 레이어를 미리 만들어둔다. 하지만 모든 요소에 남발하면 GPU 메모리를 낭비한다. 실제로 애니메이션이 일어나는 요소에만, 필요한 시점에만 적용해야 한다.
 
 ### Canvas: CPU에서 GPU로
 
@@ -517,8 +517,8 @@ self.onmessage = (e) => {
 | 항목 | 핵심 액션 | 영향 지표 |
 |---|---|---|
 | 리렌더링 | 상태 하강, memo+useCallback, key에 고유 ID | JS 실행 시간 |
-| 이미지/폰트 | WebP/AVIF, lazy loading, preload, font-display: swap | LCP, CLS |
-| 번들 | dynamic import, barrel export 피하기, 번들 분석 | TTI, FCP |
+| 이미지/폰트 | WebP/AVIF, lazy loading, preload, font-display: swap | 로딩 속도, 화면 안정성 |
+| 번들 | dynamic import, barrel export 피하기, 번들 분석 | 상호작용 가능 시점 |
 | 레이아웃 쉬프트 | width/height 지정, skeleton UI | CLS |
 | 이벤트 | debounce/throttle, passive listener, rAF | FPS, 메인 스레드 |
 | GPU 렌더링 | transform/opacity, will-change, OffscreenCanvas | FPS, CPU 사용률 |
@@ -529,6 +529,6 @@ self.onmessage = (e) => {
 
 - [Optimize Cumulative Layout Shift - web.dev](https://web.dev/articles/optimize-cls) - CLS 최적화 가이드
 - [Chrome Lighthouse - Serve images in modern formats](https://developer.chrome.com/docs/lighthouse/performance/uses-webp-images) - 이미지 포맷 최적화
-- [Tree Shaking - webpack](https://webpack.js.org/guides/tree-shaking/) - tree shaking 원리와 설정
+- [Tree Shaking - webpack](https://webpack.js.org/guides/tree-shaking/) - 안 쓰는 코드 제거 원리와 설정
 - [CSS Animation Performance](https://cr0x.net/en/css-animations-performance-rules/) - GPU 합성과 애니메이션 성능
 - [SVG vs Canvas vs WebGL Performance](https://www.svggenie.com/blog/svg-vs-canvas-vs-webgl-performance-2025) - 렌더링 방식별 성능 비교
