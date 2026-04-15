@@ -44,9 +44,12 @@
 			</p>
 		</div>
 	</a>
-	<div class="mt-3 flex flex-wrap gap-1.5 {post.thumbnail ? 'sm:pl-40' : ''}">
-		{#each post.tags as tag}
+	<div class="mt-3 flex flex-wrap items-center gap-1.5 {post.thumbnail ? 'sm:pl-40' : ''}">
+		{#each post.tags.slice(0, 3) as tag}
 			<TagChip {tag} href="/tags/{tag}" />
 		{/each}
+		{#if post.tags.length > 3}
+			<span class="text-xs text-muted-foreground">+{post.tags.length - 3}</span>
+		{/if}
 	</div>
 </article>

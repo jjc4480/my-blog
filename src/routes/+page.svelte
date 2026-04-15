@@ -8,6 +8,11 @@
 	import { buildWebSiteSchema } from '$lib/seo';
 
 	let { data } = $props();
+	let showAllTags = $state(false);
+
+	const MAX_VISIBLE_TAGS = 8;
+	const visibleTags = $derived(showAllTags ? data.tags : data.tags.slice(0, MAX_VISIBLE_TAGS));
+	const hiddenCount = $derived(data.tags.length - MAX_VISIBLE_TAGS);
 
 	const schema = buildWebSiteSchema();
 </script>
@@ -42,9 +47,17 @@
 	</div>
 	<div class="mt-3 flex flex-wrap items-center gap-2">
 		<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">태그</span>
-		{#each data.tags as tag}
+		{#each visibleTags as tag}
 			<TagChip {tag} href="/?tag={tag}" active={data.activeTag === tag} />
 		{/each}
+		{#if hiddenCount > 0}
+			<button
+				onclick={() => showAllTags = !showAllTags}
+				class="rounded-md px-2.5 py-1 text-xs font-medium text-muted-foreground bg-secondary hover:bg-secondary/80 transition-colors"
+			>
+				{showAllTags ? '접기' : `+${hiddenCount}개 더보기`}
+			</button>
+		{/if}
 	</div>
 </section>
 
