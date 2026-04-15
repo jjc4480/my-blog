@@ -65,8 +65,8 @@ export const load: PageLoad = async ({ params }) => {
 		.sort((a, b) => new Date(b!.date).getTime() - new Date(a!.date).getTime()) as Array<{ slug: string; title: string; date: string }>;
 
 	const currentIndex = allPosts.findIndex((p) => p.slug === params.slug);
-	const prevPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
-	const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+	const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+	const nextPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
 	const currentTags = (metadata.tags as string[]) ?? [];
 	const relatedPosts = Object.entries(modules)
