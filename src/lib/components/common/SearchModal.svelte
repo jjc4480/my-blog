@@ -16,18 +16,33 @@
 	const engine = new SearchEngine();
 
 	if (browser) {
-		fetch('/api/search')
-			.then((r) => {
-				if (!r.ok) throw new Error('Failed to load search index');
-				return r.json();
-			})
-			.then((data) => {
-				engine.load(data);
+		const CACHE_KEY = 'search-index';
+		const cached = sessionStorage.getItem(CACHE_KEY);
+
+		if (cached) {
+			try {
+				engine.load(JSON.parse(cached));
 				ready = true;
-			})
-			.catch((e) => {
-				error = '검색 인덱스를 불러올 수 없습니다.';
-			});
+			} catch {
+				sessionStorage.removeItem(CACHE_KEY);
+			}
+		}
+
+		if (!ready) {
+			fetch('/api/search')
+				.then((r) => {
+					if (!r.ok) throw new Error('Failed');
+					return r.json();
+				})
+				.then((data) => {
+					engine.load(data);
+					ready = true;
+					try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch {}
+				})
+				.catch(() => {
+					error = '검색 인덱스를 불러올 수 없습니다.';
+				});
+		}
 	}
 
 	function doSearch() {
@@ -38,6 +53,31 @@
 		clearTimeout(debounceTimer);
 		if (!query.trim()) { results = []; return; }
 		debounceTimer = setTimeout(doSearch, 150);
+	}
+
+
+	function getSnippet(body: string, q: string, contextLen = 60): string {
+		if (!body || !q.trim()) return '';
+		const lower = body.toLowerCase();
+		const idx = lower.indexOf(q.toLowerCase());
+		if (idx === -1) return body.slice(0, contextLen * 2) + (body.length > contextLen * 2 ? '...' : '');
+		const start = Math.max(0, idx - contextLen);
+		const end = Math.min(body.length, idx + q.length + contextLen);
+		let snippet = body.slice(start, end);
+		if (start > 0) snippet = '...' + snippet;
+		if (end < body.length) snippet = snippet + '...';
+		return snippet;
+	}
+
+	function splitHighlight(text: string, q: string): { text: string; match: boolean }[] {
+		if (!q.trim() || !text) return [{ text, match: false }];
+		const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const regex = new RegExp(`(${escaped})`, 'gi');
+		const parts = text.split(regex);
+		return parts.filter(Boolean).map((part) => ({
+			text: part,
+			match: part.toLowerCase() === q.toLowerCase()
+		}));
 	}
 
 	function close() {
@@ -119,10 +159,16 @@
 				{#each results as post (post.slug)}
 					<button
 						onclick={() => navigate(post.slug)}
-						class="flex w-full flex-col gap-0.5 px-4 py-3 text-left transition-colors hover:bg-secondary/40"
+						class="flex w-full flex-col gap-1 px-4 py-3 text-left transition-colors hover:bg-secondary/40"
 					>
-						<span class="text-sm font-medium text-foreground">{post.title}</span>
+						<span class="text-sm font-medium text-foreground">{#each splitHighlight(post.title, query) as seg}{#if seg.match}<mark class="bg-primary/20 text-foreground rounded-sm px-0.5">{seg.text}</mark>{:else}{seg.text}{/if}{/each}</span>
 						<span class="text-xs text-muted-foreground">{formatDateShort(post.date)} · {post.category}</span>
+						{#if post.body}
+							{@const snippet = getSnippet(post.body, query)}
+							{#if snippet}
+								<span class="text-xs text-muted-foreground/80 line-clamp-2">{#each splitHighlight(snippet, query) as seg}{#if seg.match}<mark class="bg-primary/20 text-foreground rounded-sm px-0.5">{seg.text}</mark>{:else}{seg.text}{/if}{/each}</span>
+							{/if}
+						{/if}
 					</button>
 				{/each}
 			{/if}
