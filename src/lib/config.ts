@@ -1,6 +1,6 @@
 export const siteConfig = {
 	title: 'jcjang의 블로그',
-	description: '개발하면서 겪은 고민들과 기록들을 남기는 공간.',
+	description: '프론트엔드, 백엔드, 시스템 설계, AI 활용까지. 개발하면서 겪은 고민과 기록을 코드 중심으로 정리하는 블로그.',
 	url: 'https://jcjang-blog.pages.dev',
 	author: {
 		name: 'jcjang',
