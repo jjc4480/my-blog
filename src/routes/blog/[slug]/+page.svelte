@@ -75,6 +75,16 @@
 					el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9\uac00-\ud7a3]+/g, '-').replace(/^-|-$/g, '') ?? '';
 				}
 				items.push({ id: el.id, text: el.textContent?.trim() ?? '', level: parseInt(el.tagName[1]) });
+
+				if (!el.querySelector('.heading-anchor')) {
+					el.classList.add('heading-with-anchor');
+					const anchor = document.createElement('a');
+					anchor.href = `#${el.id}`;
+					anchor.className = 'heading-anchor';
+					anchor.setAttribute('aria-label', `${el.textContent?.trim() ?? ''} \uc139\uc158 \ub9c1\ud06c`);
+					anchor.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+					el.insertBefore(anchor, el.firstChild);
+				}
 			});
 			headings = items;
 
