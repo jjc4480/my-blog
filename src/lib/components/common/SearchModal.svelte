@@ -9,52 +9,76 @@
 	let results: SearchPost[] = $state([]);
 	let ready = $state(false);
 	let error = $state('');
+	let focusedIndex = $state(-1);
 	let debounceTimer: ReturnType<typeof setTimeout>;
 	let inputEl: HTMLInputElement;
 	let modalEl: HTMLDivElement;
 
 	const engine = new SearchEngine();
 
-	if (browser) {
-		const CACHE_KEY = 'search-index';
-		const cached = sessionStorage.getItem(CACHE_KEY);
+	const CACHE_VERSION = 'v1';
+	const CACHE_KEY = `search-index-${CACHE_VERSION}`;
+	const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+	function loadFromCache(): unknown | null {
+		if (!browser) return null;
+		try {
+			const raw = localStorage.getItem(CACHE_KEY);
+			if (!raw) return null;
+			const parsed = JSON.parse(raw);
+			if (!parsed || typeof parsed !== 'object' || typeof parsed.ts !== 'number') return null;
+			if (Date.now() - parsed.ts > CACHE_TTL) return null;
+			return parsed.data;
+		} catch {
+			return null;
+		}
+	}
+
+	function saveToCache(data: unknown) {
+		if (!browser) return;
+		try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+	}
+
+	function fetchAndRefresh() {
+		fetch('/api/search')
+			.then((r) => {
+				if (!r.ok) throw new Error('Failed');
+				return r.json();
+			})
+			.then((data) => {
+				engine.load(data);
+				ready = true;
+				saveToCache(data);
+			})
+			.catch(() => {
+				if (!ready) error = '검색 인덱스를 불러올 수 없습니다.';
+			});
+	}
+
+	if (browser) {
+		const cached = loadFromCache();
 		if (cached) {
 			try {
-				engine.load(JSON.parse(cached));
+				engine.load(cached);
 				ready = true;
 			} catch {
-				sessionStorage.removeItem(CACHE_KEY);
+				localStorage.removeItem(CACHE_KEY);
 			}
 		}
-
-		if (!ready) {
-			fetch('/api/search')
-				.then((r) => {
-					if (!r.ok) throw new Error('Failed');
-					return r.json();
-				})
-				.then((data) => {
-					engine.load(data);
-					ready = true;
-					try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch {}
-				})
-				.catch(() => {
-					error = '검색 인덱스를 불러올 수 없습니다.';
-				});
-		}
+		// stale-while-revalidate: always refresh in background
+		fetchAndRefresh();
 	}
 
 	function doSearch() {
 		results = engine.search(query);
+		focusedIndex = results.length > 0 ? 0 : -1;
 	}
 
 	function onInput() {
 		clearTimeout(debounceTimer);
-		if (!query.trim()) { results = []; return; }
+		if (!query.trim()) { results = []; focusedIndex = -1; return; }
 		debounceTimer = setTimeout(doSearch, 150);
 	}
-
 
 	function getSnippet(body: string, q: string, contextLen = 60): string {
 		if (!body || !q.trim()) return '';
@@ -84,6 +108,7 @@
 		open = false;
 		query = '';
 		results = [];
+		focusedIndex = -1;
 	}
 
 	function navigate(slug: string) {
@@ -91,8 +116,35 @@
 		goto(`/blog/${slug}`);
 	}
 
+	function scrollFocusedIntoView() {
+		if (!modalEl || focusedIndex < 0) return;
+		const items = modalEl.querySelectorAll<HTMLElement>('[data-search-result]');
+		items[focusedIndex]?.scrollIntoView({ block: 'nearest' });
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') { close(); return; }
+
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			if (results.length === 0) return;
+			focusedIndex = (focusedIndex + 1) % results.length;
+			queueMicrotask(scrollFocusedIntoView);
+			return;
+		}
+		if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			if (results.length === 0) return;
+			focusedIndex = focusedIndex <= 0 ? results.length - 1 : focusedIndex - 1;
+			queueMicrotask(scrollFocusedIntoView);
+			return;
+		}
+		if (e.key === 'Enter' && focusedIndex >= 0 && results[focusedIndex]) {
+			e.preventDefault();
+			navigate(results[focusedIndex].slug);
+			return;
+		}
+
 		// Focus trap
 		if (e.key === 'Tab' && modalEl) {
 			const focusable = modalEl.querySelectorAll<HTMLElement>('input, button, a, [tabindex]:not([tabindex="-1"])');
@@ -156,10 +208,13 @@
 			{:else if query.trim() && results.length === 0}
 				<p class="px-4 py-6 text-center text-sm text-muted-foreground">검색 결과가 없습니다.</p>
 			{:else}
-				{#each results as post (post.slug)}
+				{#each results as post, i (post.slug)}
 					<button
+						data-search-result
 						onclick={() => navigate(post.slug)}
-						class="flex w-full flex-col gap-1 px-4 py-3 text-left transition-colors hover:bg-secondary/40"
+						onmouseenter={() => focusedIndex = i}
+						class="flex w-full flex-col gap-1 px-4 py-3 text-left transition-colors {i === focusedIndex ? 'bg-accent/10' : 'hover:bg-secondary/40'}"
+						aria-selected={i === focusedIndex}
 					>
 						<span class="text-sm font-medium text-foreground">{#each splitHighlight(post.title, query) as seg}{#if seg.match}<mark class="bg-primary/20 text-foreground rounded-sm px-0.5">{seg.text}</mark>{:else}{seg.text}{/if}{/each}</span>
 						<span class="text-xs text-muted-foreground">{formatDateShort(post.date)} · {post.category}</span>
