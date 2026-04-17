@@ -5,6 +5,7 @@
 	import SEO from '$lib/components/common/SEO.svelte';
 	import JsonLD from '$lib/components/common/JsonLD.svelte';
 	import TOC from '$lib/components/post/TOC.svelte';
+	import ReadingProgress from '$lib/components/post/ReadingProgress.svelte';
 	import { siteConfig } from '$lib/config';
 	import { buildArticleSchema, buildBreadcrumbSchema } from '$lib/seo';
 	import { formatDate } from '$lib/utils';
@@ -23,7 +24,6 @@
 
 	interface TocItem { id: string; text: string; level: number; }
 	let headings: TocItem[] = $state([]);
-	let readingProgress = $state(0);
 
 	const breadcrumbSchema = $derived(buildBreadcrumbSchema([
 		{ name: '홈', url: siteConfig.url },
@@ -137,18 +137,6 @@
 		});
 	});
 
-	$effect(() => {
-		if (!browser) return;
-		function onScroll() {
-			const el = document.documentElement;
-			const scrollTop = el.scrollTop;
-			const scrollHeight = el.scrollHeight - el.clientHeight;
-			readingProgress = scrollHeight > 0 ? Math.min((scrollTop / scrollHeight) * 100, 100) : 0;
-		}
-		window.addEventListener('scroll', onScroll, { passive: true });
-		return () => window.removeEventListener('scroll', onScroll);
-	});
-
 </script>
 
 <svelte:window onkeydown={handlePostKeydown} />
@@ -166,7 +154,7 @@
 <JsonLD schema={articleSchema} />
 <JsonLD schema={breadcrumbSchema} />
 
-<div class="fixed top-0 left-0 z-50 h-0.5 bg-primary transition-all duration-150" style="width: {readingProgress}%"></div>
+<ReadingProgress target="article" />
 
 <TOC {headings} />
 
