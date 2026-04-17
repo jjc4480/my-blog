@@ -96,15 +96,15 @@
 	{/if}
 
 	<!-- Desktop xl+: fixed right sidebar -->
-	<aside class="fixed top-24 right-8 hidden w-48 max-h-[calc(100vh-8rem)] overflow-y-auto xl:block">
-		<nav aria-label="목차">
-			<p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">목차</p>
-			<ul class="space-y-1 border-l border-border/50">
+	<aside class="fixed top-24 right-8 hidden w-48 max-h-[calc(100vh-8rem)] flex-col xl:flex" style="scrollbar-gutter: stable;">
+		<p class="mb-2 shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground">목차</p>
+		<nav aria-label="목차" class="min-h-0 overflow-y-auto toc-scroll">
+			<ul class="space-y-0.5 border-l border-border/50">
 				{#each headings as heading}
 					<li style="padding-left: {(heading.level - 2) * 0.75 + 0.75}rem">
 						<a
 							href="#{heading.id}"
-							class="block -ml-px border-l-2 py-1 pl-3 text-[13px] leading-relaxed transition-colors {activeId === heading.id
+							class="block -ml-px border-l-2 py-0.5 pl-3 text-[12.5px] leading-snug transition-colors {activeId === heading.id
 								? 'border-primary text-primary font-medium'
 								: 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'}"
 						>
@@ -116,3 +116,23 @@
 		</nav>
 	</aside>
 {/if}
+
+<style>
+	.toc-scroll {
+		scrollbar-width: thin;
+		scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+	}
+	:global(.dark) .toc-scroll {
+		scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+	}
+	.toc-scroll::-webkit-scrollbar {
+		width: 4px;
+	}
+	.toc-scroll::-webkit-scrollbar-thumb {
+		background: rgba(0, 0, 0, 0.15);
+		border-radius: 2px;
+	}
+	:global(.dark) .toc-scroll::-webkit-scrollbar-thumb {
+		background: rgba(255, 255, 255, 0.15);
+	}
+</style>
