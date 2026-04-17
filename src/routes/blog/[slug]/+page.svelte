@@ -14,6 +14,11 @@
 	let isAdmin = $state(false);
 	let authChecked = $state(false);
 	let seriesOpen = $state(true);
+	const seriesIndex = $derived(
+		data.series && data.seriesPosts?.length
+			? data.seriesPosts.findIndex((p: { slug: string }) => p.slug === data.slug) + 1
+			: 0
+	);
 
 	$effect(() => {
 		fetch('/api/me').then(r => r.json()).then(u => {
@@ -202,7 +207,7 @@
 				<span class="flex items-center gap-2">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
 					시리즈: {data.series}
-					<span class="text-xs text-muted-foreground">({data.seriesPosts.length}편)</span>
+					<span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary tabular-nums">{seriesIndex} / {data.seriesPosts.length}</span>
 				</span>
 				<svg
 					xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -230,19 +235,25 @@
 					</ol>
 				</div>
 				{#if data.prevSeriesPost || data.nextSeriesPost}
-					<div class="flex items-center justify-between border-t border-border/30 px-4 py-2.5 text-sm">
+					<div class="grid gap-2 border-t border-border/30 p-3 sm:grid-cols-2">
 						{#if data.prevSeriesPost}
-							<a href="/blog/{data.prevSeriesPost.slug}" class="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
-								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-								이전편
+							<a href="/blog/{data.prevSeriesPost.slug}" class="group flex flex-col gap-0.5 rounded-md bg-background/60 px-3 py-2 transition-colors hover:bg-background">
+								<span class="flex items-center gap-1 text-[11px] text-muted-foreground">
+									<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+									이전 시리즈 글
+								</span>
+								<span class="text-xs font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">{data.prevSeriesPost.title}</span>
 							</a>
 						{:else}
 							<div></div>
 						{/if}
 						{#if data.nextSeriesPost}
-							<a href="/blog/{data.nextSeriesPost.slug}" class="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
-								다음편
-								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+							<a href="/blog/{data.nextSeriesPost.slug}" class="group flex flex-col items-end gap-0.5 rounded-md bg-background/60 px-3 py-2 text-right transition-colors hover:bg-background">
+								<span class="flex items-center gap-1 text-[11px] text-muted-foreground">
+									다음 시리즈 글
+									<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+								</span>
+								<span class="text-xs font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">{data.nextSeriesPost.title}</span>
 							</a>
 						{/if}
 					</div>
