@@ -9,15 +9,15 @@
 <article class="group py-6">
 	<a href="/blog/{post.slug}" class="flex gap-4">
 		{#if post.thumbnail}
-			<div class="hidden shrink-0 sm:block">
+			<div class="hidden h-24 w-36 shrink-0 overflow-hidden rounded-md sm:block" style="aspect-ratio: 3 / 2;">
 				<img
 					src={post.thumbnail}
 					alt={post.title}
 					loading="lazy"
 					decoding="async"
 					width="144"
-				height="96"
-				class="h-24 w-36 rounded-md object-cover"
+					height="96"
+					class="h-full w-full object-cover"
 				/>
 			</div>
 		{/if}
