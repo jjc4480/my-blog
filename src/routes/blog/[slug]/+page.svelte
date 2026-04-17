@@ -170,7 +170,7 @@
 
 <TOC {headings} />
 
-<article>
+<article class="pb-24 sm:pb-0">
 	<header class="mb-10">
 		<div class="mb-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
 			<time datetime={data.date}>{formatDate(data.date)}</time>
@@ -301,7 +301,7 @@
 
 <!-- Mobile floating prev/next buttons -->
 {#if data.prevPost || data.nextPost}
-	<div class="fixed bottom-6 left-4 right-4 z-40 flex items-center justify-between lg:hidden">
+	<div class="fixed bottom-6 left-4 right-4 z-40 flex items-center justify-between lg:hidden" style="contain: layout;">
 		{#if data.prevPost}
 			<a
 				href="/blog/{data.prevPost.slug}"
