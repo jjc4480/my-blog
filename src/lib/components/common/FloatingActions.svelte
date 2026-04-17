@@ -28,7 +28,7 @@
 			shortcutsOpen = false;
 			return;
 		}
-		if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
+		if (e.shiftKey && e.code === 'Slash' && !e.metaKey && !e.ctrlKey) {
 			const tag = (e.target as HTMLElement)?.tagName;
 			if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !(e.target as HTMLElement)?.isContentEditable) {
 				shortcutsOpen = !shortcutsOpen;

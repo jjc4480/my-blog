@@ -57,7 +57,7 @@
 		if (e.key === 'Escape' && mobileOpen) {
 			closeMobile();
 		}
-		if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+		if ((e.metaKey || e.ctrlKey) && e.code === 'KeyK') {
 			e.preventDefault();
 			searchOpen = !searchOpen;
 		}

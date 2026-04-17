@@ -53,14 +53,14 @@
 		if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
 
 		// j/k or ←/→: prev/next post
-		if ((e.key === 'ArrowLeft' || e.key === 'j') && data.prevPost) {
+		if ((e.key === 'ArrowLeft' || e.code === 'KeyJ') && data.prevPost) {
 			goto("/blog/" + data.prevPost.slug);
 		}
-		if ((e.key === 'ArrowRight' || e.key === 'k') && data.nextPost) {
+		if ((e.key === 'ArrowRight' || e.code === 'KeyK') && data.nextPost) {
 			goto("/blog/" + data.nextPost.slug);
 		}
 		// h: go home
-		if (e.key === 'h' && !e.metaKey && !e.ctrlKey) {
+		if (e.code === 'KeyH' && !e.metaKey && !e.ctrlKey) {
 			goto('/');
 		}
 

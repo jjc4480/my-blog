@@ -107,7 +107,7 @@
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
-		if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+		if ((e.metaKey || e.ctrlKey) && e.code === 'KeyS') {
 			e.preventDefault();
 			save();
 		}
