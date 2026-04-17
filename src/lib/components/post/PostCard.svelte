@@ -12,7 +12,8 @@
 			<div class="hidden h-24 w-36 shrink-0 overflow-hidden rounded-md sm:block" style="aspect-ratio: 3 / 2;">
 				<img
 					src={post.thumbnail}
-					alt={post.title}
+					alt=""
+					aria-hidden="true"
 					loading="lazy"
 					decoding="async"
 					width="144"
