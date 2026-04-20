@@ -295,7 +295,7 @@ Svelte는 상태관리 라이브러리를 따로 고를 필요가 거의 없다.
 
 ## 참고 자료
 
-- [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark) - 프레임워크별 런타임 성능 벤치마크
-- [Svelte vs React: A Technical Comparison](https://manuelsanchezdev.com/blog/svelte-react-comparison/) - 반응성 모델 상세 비교
-- [SvelteKit vs Next.js (Better Stack)](https://betterstack.com/community/guides/scaling-nodejs/sveltekit-vs-nextjs/) - 메타 프레임워크 비교
-- [npmtrends: react vs svelte](https://npmtrends.com/react-vs-svelte) - npm 다운로드 추이
+- [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark): 프레임워크별 런타임 성능 벤치마크
+- [Svelte vs React: A Technical Comparison](https://manuelsanchezdev.com/blog/svelte-react-comparison/): 반응성 모델 상세 비교
+- [SvelteKit vs Next.js (Better Stack)](https://betterstack.com/community/guides/scaling-nodejs/sveltekit-vs-nextjs/): 메타 프레임워크 비교
+- [npmtrends: react vs svelte](https://npmtrends.com/react-vs-svelte): npm 다운로드 추이

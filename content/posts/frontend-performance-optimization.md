@@ -12,7 +12,7 @@ published: true
 
 자주 보이는 6가지를 Before/After로 정리해봤다.
 
-## 1. 불필요한 리렌더링
+## 불필요한 리렌더링
 
 React에서 상태가 바뀌면 해당 컴포넌트 + **모든 자식**이 재렌더링된다. 자식이 그 상태와 전혀 관련 없어도. 이게 기본 동작이라 좀 당황스럽다.
 
@@ -110,7 +110,7 @@ function Parent() {
 
 `key={index}`는 리스트 중간에 항목이 추가되거나 삭제될 때 React가 DOM을 잘못 재사용하게 만든다. 버그와 성능 저하를 동시에 유발한다.
 
-## 2. 이미지와 폰트 로딩
+## 이미지와 폰트 로딩
 
 이미지랑 폰트는 로딩 속도에 직접적인 영향을 준다. 포맷 바꾸고 로딩 순서만 조정해도 차이가 꽤 난다.
 
@@ -170,7 +170,7 @@ JPEG 기준으로 WebP는 25~35%, AVIF는 약 50%까지 용량이 줄어든다. 
 
 `font-display: swap`을 쓰면 폰트 로딩 전에 시스템 폰트를 먼저 보여준다. 잠깐 다른 글꼴로 보이긴 하는데, 아예 안 보이는 것보단 낫다.
 
-## 3. 번들 사이즈
+## 번들 사이즈
 
 번들이 크면 브라우저가 JavaScript를 해석하고 실행하는 데 시간이 더 걸린다. 페이지는 떴는데 버튼을 눌러도 반응이 없는, 그 답답한 시간이 길어지는 거다.
 
@@ -241,7 +241,7 @@ npm install @next/bundle-analyzer
 ```
 
 의외로 `moment.js`(288KB)나 `lodash`(72KB) 전체 import가 큰 비중을 차지하는 경우가 많다. `date-fns`나 `lodash-es`로 바꾸면 수십 KB가 빠진다.
-## 4. 레이아웃 쉬프트
+## 레이아웃 쉬프트
 
 페이지 로드 중에 요소가 갑자기 밀려나는 거. 기사 읽는데 광고가 끼어들면서 버튼이 밀려나는 경험, 다들 있을 거다. 구글 웹 성능 지표 중 하나로, 0.1 이하면 "양호"다.
 
@@ -308,7 +308,7 @@ function UserProfile() {
 ```
 
 Skeleton이랑 실제 콘텐츠 높이가 다르면 어차피 밀리니까, 크기를 맞춰야 의미가 있다.
-## 5. 이벤트 핸들러
+## 이벤트 핸들러
 
 스크롤, 리사이즈, 입력 이벤트는 초당 수십~수백 번 발생한다. 핸들러가 조금이라도 무거우면 UI가 버벅거린다.
 
@@ -400,7 +400,7 @@ window.addEventListener('scroll', () => {
 ```
 
 `requestAnimationFrame`은 브라우저가 다음 화면을 그리기 직전에 실행된다. `setTimeout(fn, 16)`이랑 비슷해 보이지만, `setTimeout`은 렌더링 타이밍이랑 안 맞아서 프레임이 빠질 수 있다. 애니메이션이나 스크롤 기반 UI에는 `requestAnimationFrame`을 쓰자.
-## 6. CPU vs GPU 렌더링
+## CPU vs GPU 렌더링
 
 브라우저가 CSS 변경을 화면에 반영할 때 세 단계를 거친다.
 
@@ -527,8 +527,8 @@ CSS든 Canvas든 결국 같은 얘기다. CPU가 매 프레임 하던 무거운 
 
 ## 참고 자료
 
-- [Optimize Cumulative Layout Shift - web.dev](https://web.dev/articles/optimize-cls) - CLS 최적화 가이드
-- [Chrome Lighthouse - Serve images in modern formats](https://developer.chrome.com/docs/lighthouse/performance/uses-webp-images) - 이미지 포맷 최적화
-- [Tree Shaking - webpack](https://webpack.js.org/guides/tree-shaking/) - 안 쓰는 코드 제거 원리와 설정
-- [CSS Animation Performance](https://cr0x.net/en/css-animations-performance-rules/) - GPU 합성과 애니메이션 성능
-- [SVG vs Canvas vs WebGL Performance](https://www.svggenie.com/blog/svg-vs-canvas-vs-webgl-performance-2025) - 렌더링 방식별 성능 비교
+- [Optimize Cumulative Layout Shift - web.dev](https://web.dev/articles/optimize-cls): CLS 최적화 가이드
+- [Chrome Lighthouse - Serve images in modern formats](https://developer.chrome.com/docs/lighthouse/performance/uses-webp-images): 이미지 포맷 최적화
+- [Tree Shaking - webpack](https://webpack.js.org/guides/tree-shaking/): 안 쓰는 코드 제거 원리와 설정
+- [CSS Animation Performance](https://cr0x.net/en/css-animations-performance-rules/): GPU 합성과 애니메이션 성능
+- [SVG vs Canvas vs WebGL Performance](https://www.svggenie.com/blog/svg-vs-canvas-vs-webgl-performance-2025): 렌더링 방식별 성능 비교
