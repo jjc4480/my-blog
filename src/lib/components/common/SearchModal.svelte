@@ -10,6 +10,7 @@
 	let ready = $state(false);
 	let error = $state('');
 	let focusedIndex = $state(-1);
+	let hasFetchedOnce = $state(false);
 	let debounceTimer: ReturnType<typeof setTimeout>;
 	let inputEl: HTMLInputElement;
 	let modalEl: HTMLDivElement;
@@ -65,9 +66,15 @@
 				localStorage.removeItem(CACHE_KEY);
 			}
 		}
-		// stale-while-revalidate: always refresh in background
-		fetchAndRefresh();
 	}
+
+	// stale-while-revalidate: defer network fetch until the modal actually opens.
+	$effect(() => {
+		if (open && !hasFetchedOnce) {
+			hasFetchedOnce = true;
+			fetchAndRefresh();
+		}
+	});
 
 	function doSearch() {
 		results = engine.search(query);
