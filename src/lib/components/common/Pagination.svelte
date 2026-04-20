@@ -10,6 +10,24 @@
 		const qs = params.toString();
 		return qs ? `?${qs}` : page.url.pathname;
 	}
+
+	function getPageNumbers(current: number, total: number): (number | '...')[] {
+		if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+		const pages: (number | '...')[] = [];
+		const showLeft = current - 2 > 2;
+		const showRight = current + 2 < total - 1;
+
+		pages.push(1);
+		if (showLeft) pages.push('...');
+		for (let i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) {
+			pages.push(i);
+		}
+		if (showRight) pages.push('...');
+		pages.push(total);
+		return pages;
+	}
+
+	const pageItems = $derived(getPageNumbers(currentPage, totalPages));
 </script>
 
 {#if totalPages > 1}
@@ -24,17 +42,24 @@
 			</a>
 		{/if}
 
-		{#each Array.from({ length: totalPages }, (_, i) => i + 1) as p}
-			<a
-				href={pageHref(p)}
-				class="rounded-md px-3 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none {p === currentPage
-					? 'bg-primary text-primary-foreground'
-					: 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'}"
-				aria-label="{p}페이지"
-				aria-current={p === currentPage ? 'page' : undefined}
-			>
-				{p}
-			</a>
+		{#each pageItems as item, i (i)}
+			{#if item === '...'}
+				<span
+					class="px-2 py-1.5 text-sm text-muted-foreground select-none"
+					aria-hidden="true"
+				>…</span>
+			{:else}
+				<a
+					href={pageHref(item)}
+					class="rounded-md px-3 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none {item === currentPage
+						? 'bg-primary text-primary-foreground'
+						: 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'}"
+					aria-label="{item}페이지"
+					aria-current={item === currentPage ? 'page' : undefined}
+				>
+					{item}
+				</a>
+			{/if}
 		{/each}
 
 		{#if currentPage < totalPages}
