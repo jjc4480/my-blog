@@ -1,5 +1,6 @@
 import type { Post } from './types';
 import { getReadingTime } from './reading-time';
+import { postSchema } from './frontmatter';
 
 export async function getPosts(options?: { includeSecret?: boolean }): Promise<Post[]> {
 	const modules = import.meta.glob('/content/posts/*.md', { eager: true });
@@ -7,9 +8,15 @@ export async function getPosts(options?: { includeSecret?: boolean }): Promise<P
 	const posts: Post[] = [];
 
 	for (const [path, module] of Object.entries(modules)) {
-		const mod = module as { metadata: Omit<Post, 'slug' | 'content'>; default: { render: () => { html: string } } };
+		const mod = module as { metadata: unknown; default: { render: () => { html: string } } };
 		const slug = path.split('/').pop()?.replace('.md', '') ?? '';
-		const metadata = mod.metadata;
+
+		const result = postSchema.safeParse(mod.metadata);
+		if (!result.success) {
+			console.warn(`[posts] Invalid frontmatter in ${slug}:`, result.error.issues);
+			continue;
+		}
+		const metadata = result.data as Omit<Post, 'slug' | 'content'>;
 
 		if (metadata.published === false) continue;
 		if (metadata.secret && !options?.includeSecret) continue;

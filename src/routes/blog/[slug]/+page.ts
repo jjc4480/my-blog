@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getPosts } from '$lib/content/posts';
 import type { PageLoad } from './$types';
-import { getReadingTime } from '$lib/content/reading-time';
 
 export const prerender = true;
 
@@ -10,18 +9,8 @@ export async function entries() {
 	return posts.map((p) => ({ slug: p.slug }));
 }
 
-type PostEntry = {
-	slug: string;
-	title: string;
-	date: string;
-	tags: string[];
-	series?: string;
-	seriesOrder?: number;
-};
-
 export const load: PageLoad = async ({ params }) => {
 	const modules = import.meta.glob('/content/posts/*.md', { eager: true });
-	const rawModules = import.meta.glob('/content/posts/*.md', { query: '?raw', eager: true, import: 'default' });
 	const path = `/content/posts/${params.slug}.md`;
 	const module = modules[path] as { metadata: Record<string, unknown>; default: ConstructorOfATypedSvelteComponent } | undefined;
 
@@ -30,35 +19,22 @@ export const load: PageLoad = async ({ params }) => {
 	}
 
 	const { metadata } = module;
-	const rawContent = (rawModules[path] as string) ?? '';
-	const readingTime = getReadingTime(rawContent);
 
-	// Single pass over all post modules — build unified PostEntry[] with all fields
-	// needed for prev/next, series, and related derivations.
-	const allPostsData: PostEntry[] = Object.entries(modules)
-		.map(([p, m]) => {
-			const mod = m as { metadata: Record<string, unknown> };
-			if (!mod.metadata || mod.metadata.published === false) return null;
-			if (mod.metadata.secret) return null;
-			return {
-				slug: p.split('/').pop()?.replace('.md', '') ?? '',
-				title: mod.metadata.title as string,
-				date: mod.metadata.date as string,
-				tags: (mod.metadata.tags as string[]) ?? [],
-				series: mod.metadata.series as string | undefined,
-				seriesOrder: mod.metadata.seriesOrder as number | undefined
-			} satisfies PostEntry;
-		})
-		.filter((p): p is PostEntry => p !== null)
-		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	// Reuse getPosts() for validated metadata + precomputed readingTime.
+	// includeSecret keeps admin-visible posts in currentPost; publicPosts
+	// drives navigation/related so regular readers never see secret slugs.
+	const allPosts = await getPosts({ includeSecret: true });
+	const currentPost = allPosts.find((p) => p.slug === params.slug);
+	const publicPosts = allPosts.filter((p) => !p.secret);
+	const readingTime = currentPost?.readingTime ?? 0;
 
 	// prev/next glob (date-sorted, newest first): prev = newer, next = older.
-	const currentIndex = allPostsData.findIndex((p) => p.slug === params.slug);
+	const currentIndex = publicPosts.findIndex((p) => p.slug === params.slug);
 	const prevPost = currentIndex > 0
-		? { slug: allPostsData[currentIndex - 1].slug, title: allPostsData[currentIndex - 1].title, date: allPostsData[currentIndex - 1].date }
+		? { slug: publicPosts[currentIndex - 1].slug, title: publicPosts[currentIndex - 1].title, date: publicPosts[currentIndex - 1].date }
 		: null;
-	const nextPost = currentIndex >= 0 && currentIndex < allPostsData.length - 1
-		? { slug: allPostsData[currentIndex + 1].slug, title: allPostsData[currentIndex + 1].title, date: allPostsData[currentIndex + 1].date }
+	const nextPost = currentIndex >= 0 && currentIndex < publicPosts.length - 1
+		? { slug: publicPosts[currentIndex + 1].slug, title: publicPosts[currentIndex + 1].title, date: publicPosts[currentIndex + 1].date }
 		: null;
 
 	// Series navigation — filter by current series, sort by seriesOrder.
@@ -68,7 +44,7 @@ export const load: PageLoad = async ({ params }) => {
 	let nextSeriesPost: { slug: string; title: string } | null = null;
 
 	if (currentSeries) {
-		seriesPosts = allPostsData
+		seriesPosts = publicPosts
 			.filter((p) => p.series === currentSeries)
 			.map((p) => ({ slug: p.slug, title: p.title, order: p.seriesOrder ?? 0 }))
 			.sort((a, b) => a.order - b.order);
@@ -80,7 +56,7 @@ export const load: PageLoad = async ({ params }) => {
 
 	// Related posts — share 1+ tag, sorted by shared count desc then date desc.
 	const currentTags = (metadata.tags as string[]) ?? [];
-	const relatedPosts = allPostsData
+	const relatedPosts = publicPosts
 		.filter((p) => p.slug !== params.slug)
 		.map((p) => ({
 			slug: p.slug,
@@ -98,7 +74,7 @@ export const load: PageLoad = async ({ params }) => {
 		description: metadata.description as string,
 		tags: metadata.tags as string[],
 		category: metadata.category as string,
-		secret: (metadata.secret as boolean) ?? false,
+		secret: ((metadata.secret as boolean | undefined) ?? false),
 		slug: params.slug,
 		readingTime,
 		prevPost,
