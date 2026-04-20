@@ -18,8 +18,8 @@ export interface SearchData {
 
 function extractCode(md: string): string {
 	const blocks: string[] = [];
-	md.replace(/```[\w]*\n([\s\S]*?)```/g, (_, code) => { blocks.push(code); return ''; });
-	md.replace(/`([^`]+)`/g, (_, code) => { blocks.push(code); return ''; });
+	const afterBlock = md.replace(/```[\w]*\n([\s\S]*?)```/g, (_, code) => { blocks.push(code); return ''; });
+	afterBlock.replace(/`([^`]+)`/g, (_, code) => { blocks.push(code); return ''; });
 	return blocks.join(' ');
 }
 
