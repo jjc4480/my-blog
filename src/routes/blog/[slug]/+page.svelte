@@ -74,27 +74,16 @@
 			const article = document.querySelector('article .prose');
 			if (!article) return;
 
-			const els = article.querySelectorAll('h2, h3');
+			const els = article.querySelectorAll('h2[id], h3[id]');
 			const items: TocItem[] = [];
 			els.forEach((el) => {
-				if (!el.id) {
-					el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9\uac00-\ud7a3]+/g, '-').replace(/^-|-$/g, '') ?? '';
-				}
-				items.push({ id: el.id, text: el.textContent?.trim() ?? '', level: parseInt(el.tagName[1]) });
-
-				if (!el.querySelector('.heading-anchor')) {
-					el.classList.add('heading-with-anchor');
-					const anchor = document.createElement('a');
-					anchor.href = `#${el.id}`;
-					anchor.className = 'heading-anchor';
-					anchor.setAttribute('aria-label', `${el.textContent?.trim() ?? ''} \uc139\uc158 \ub9c1\ud06c`);
-					anchor.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
-					el.insertBefore(anchor, el.firstChild);
-				}
+				if (!el.id) return;
+				const anchor = el.querySelector('.heading-anchor');
+				const text = (anchor ? el.textContent?.replace(anchor.textContent ?? '', '') : el.textContent)?.trim() ?? '';
+				items.push({ id: el.id, text, level: parseInt(el.tagName[1]) });
 			});
 			headings = items;
 
-			// Mermaid diagrams
 			const mermaidBlocks = article.querySelectorAll('pre.mermaid');
 			if (mermaidBlocks.length > 0) {
 				import('mermaid').then(({ default: mermaid }) => {
@@ -107,44 +96,25 @@
 					mermaid.run({ nodes: mermaidBlocks });
 				});
 			}
-
-			article.querySelectorAll('pre:not(.mermaid)').forEach((pre) => {
-				if (pre.querySelector('.copy-btn')) return;
-				const wrapper = document.createElement('div');
-				wrapper.className = 'code-block-wrapper relative group';
-				pre.parentNode?.insertBefore(wrapper, pre);
-				wrapper.appendChild(pre);
-
-				const btn = document.createElement('button');
-				btn.className = 'copy-btn';
-				btn.setAttribute('aria-label', '코드 복사');
-				btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-				btn.addEventListener('click', async () => {
-					const code = pre.querySelector('code');
-					const text = code?.textContent ?? pre.textContent ?? '';
-					try {
-						await navigator.clipboard.writeText(text);
-						btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-						btn.classList.add('copied');
-						setTimeout(() => {
-							btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-							btn.classList.remove('copied');
-						}, 2000);
-					} catch {
-						btn.textContent = '!';
-						setTimeout(() => {
-							btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-						}, 2000);
-					}
-				});
-				wrapper.appendChild(btn);
-			});
 		});
 	});
 
+	function handleCopyClick(e: MouseEvent) {
+		const target = (e.target as HTMLElement | null)?.closest('[data-copy-btn]') as HTMLButtonElement | null;
+		if (!target) return;
+		const wrapper = target.closest('.code-block-wrapper');
+		const pre = wrapper?.querySelector('pre');
+		const text = pre?.querySelector('code')?.textContent ?? pre?.textContent ?? '';
+		const done = () => {
+			target.classList.add('copied');
+			setTimeout(() => target.classList.remove('copied'), 2000);
+		};
+		navigator.clipboard.writeText(text).then(done).catch(done);
+	}
+
 </script>
 
-<svelte:window onkeydown={handlePostKeydown} />
+<svelte:window onkeydown={handlePostKeydown} onclick={handleCopyClick} />
 
 
 <SEO
