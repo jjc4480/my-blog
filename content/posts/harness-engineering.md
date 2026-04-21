@@ -4,6 +4,8 @@ date: 2026-04-13
 description: AI 에이전트를 실무에서 쓰면서 겪는 문제들, 그리고 그걸 구조적으로 해결하는 방법
 tags: [ai, agent, harness-engineering, architecture]
 category: engineering
+series: AI 에이전트 엔지니어링
+seriesOrder: 1
 published: true
 ---
 
