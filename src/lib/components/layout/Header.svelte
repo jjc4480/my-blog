@@ -101,9 +101,12 @@
 					<button
 						type="button"
 						onclick={() => (tagsExpanded = !tagsExpanded)}
-						class="mt-2 px-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+						class="mt-4 ml-3 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
 					>
-						{tagsExpanded ? '접기' : `더보기 (+${hiddenTagCount})`}
+						<span>{tagsExpanded ? '접기' : `더보기 (+${hiddenTagCount})`}</span>
+						<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform {tagsExpanded ? 'rotate-180' : ''}">
+							<polyline points="6 9 12 15 18 9"></polyline>
+						</svg>
 					</button>
 				{/if}
 			</div>
