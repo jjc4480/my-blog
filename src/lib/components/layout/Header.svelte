@@ -12,6 +12,11 @@
 	let mobileOpen = $state(false);
 	let searchOpen = $state(false);
 	let mobileNavEl: HTMLElement | undefined = $state();
+	let tagsExpanded = $state(false);
+
+	const TAG_PREVIEW_COUNT = 10;
+	const visibleTags = $derived(tagsExpanded ? tags : tags.slice(0, TAG_PREVIEW_COUNT));
+	const hiddenTagCount = $derived(Math.max(0, tags.length - TAG_PREVIEW_COUNT));
 
 	const navItems = [
 		{ href: '/', label: '홈' },
@@ -87,11 +92,20 @@
 		{#if tags.length > 0}
 			<div class="border-t border-border/50 pt-4">
 				<p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">태그</p>
-				<div class="flex flex-wrap gap-1.5 px-3">
-					{#each tags as tag}
+				<div class="flex flex-wrap gap-1.5 px-3 {tagsExpanded ? 'max-h-64 overflow-y-auto sidebar-tag-scroll pb-1' : ''}">
+					{#each visibleTags as tag}
 						<TagChip {tag} href="/tags/{tag}" />
 					{/each}
 				</div>
+				{#if hiddenTagCount > 0}
+					<button
+						type="button"
+						onclick={() => (tagsExpanded = !tagsExpanded)}
+						class="mt-2 px-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+					>
+						{tagsExpanded ? '접기' : `더보기 (+${hiddenTagCount})`}
+					</button>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -182,3 +196,23 @@
 {/if}
 
 <SearchModal bind:open={searchOpen} />
+
+<style>
+	.sidebar-tag-scroll {
+		scrollbar-width: thin;
+		scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+	}
+	:global(.dark) .sidebar-tag-scroll {
+		scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+	}
+	.sidebar-tag-scroll::-webkit-scrollbar {
+		width: 4px;
+	}
+	.sidebar-tag-scroll::-webkit-scrollbar-thumb {
+		background: rgba(0, 0, 0, 0.15);
+		border-radius: 2px;
+	}
+	:global(.dark) .sidebar-tag-scroll::-webkit-scrollbar-thumb {
+		background: rgba(255, 255, 255, 0.15);
+	}
+</style>
