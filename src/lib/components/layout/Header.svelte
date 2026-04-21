@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
+	import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import SearchModal from '$lib/components/common/SearchModal.svelte';
 	import { siteConfig } from '$lib/config';
@@ -10,6 +11,7 @@
 
 	let mobileOpen = $state(false);
 	let searchOpen = $state(false);
+	let mobileNavEl: HTMLElement | undefined = $state();
 
 	const navItems = [
 		{ href: '/', label: '홈' },
@@ -26,30 +28,16 @@
 		mobileOpen = false;
 	}
 
-	let scrollY = 0;
 	$effect(() => {
 		if (!browser) return;
-		if (mobileOpen) {
-			scrollY = window.scrollY;
-			document.body.style.position = 'fixed';
-			document.body.style.top = `-${scrollY}px`;
-			document.body.style.left = '0';
-			document.body.style.right = '0';
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.position = '';
-			document.body.style.top = '';
-			document.body.style.left = '';
-			document.body.style.right = '';
-			document.body.style.overflow = '';
-			window.scrollTo(0, scrollY);
+		const el = mobileNavEl;
+		if (mobileOpen && el) {
+			disableBodyScroll(el, { reserveScrollBarGap: true });
+		} else if (el) {
+			enableBodyScroll(el);
 		}
 		return () => {
-			document.body.style.position = '';
-			document.body.style.top = '';
-			document.body.style.left = '';
-			document.body.style.right = '';
-			document.body.style.overflow = '';
+			if (el) enableBodyScroll(el);
 		};
 	});
 
@@ -152,6 +140,7 @@
 	></button>
 	<!-- Menu panel on top of backdrop -->
 	<nav
+		bind:this={mobileNavEl}
 		id="mobile-nav"
 		class="fixed left-0 right-0 top-0 z-[70] border-b border-border/50 bg-background/90 backdrop-blur-xl px-4 pb-6 pt-4 sm:px-6 animate-slide-down lg:hidden"
 		aria-label="모바일 네비게이션"

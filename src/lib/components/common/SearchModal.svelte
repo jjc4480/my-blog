@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade';
 	import { goto } from '$app/navigation';
 	import { SearchEngine, type SearchPost } from '$lib/content/search';
 	import { formatDateShort } from '$lib/utils';
@@ -167,6 +168,19 @@
 			}
 		}
 	}
+
+	$effect(() => {
+		if (!browser) return;
+		const el = modalEl;
+		if (open && el) {
+			disableBodyScroll(el, { reserveScrollBarGap: true });
+		} else if (el) {
+			enableBodyScroll(el);
+		}
+		return () => {
+			if (el) enableBodyScroll(el);
+		};
+	});
 
 	$effect(() => {
 		if (open && inputEl) {

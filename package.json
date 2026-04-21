@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-		"optimize-images": "node scripts/optimize-images.js",
+    "optimize-images": "node scripts/optimize-images.js",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
@@ -64,6 +64,7 @@
     "@tiptap/extension-text": "^3.22.3",
     "@tiptap/pm": "^3.22.3",
     "@tiptap/starter-kit": "^3.22.3",
+    "body-scroll-lock-upgrade": "^1.1.0",
     "flexsearch": "^0.7.43",
     "js-yaml": "^4.1.1",
     "linkifyjs": "^4.3.2",
