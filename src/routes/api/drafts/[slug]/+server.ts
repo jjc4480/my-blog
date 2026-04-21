@@ -7,6 +7,13 @@ import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 
 
+
+async function resolveDraftPath(slug: string): Promise<string> {
+	const draftsPath = join(process.cwd(), 'content', 'drafts', `${slug}.md`);
+	try { await readFile(draftsPath, 'utf-8'); return draftsPath; } catch {}
+	return join(process.cwd(), 'content', 'posts', `${slug}.md`);
+}
+
 const SLUG_PATTERN = /^[a-z0-9가-힣](?:[a-z0-9가-힣-]*[a-z0-9가-힣])?$/i;
 
 function validateSlug(slug: string): boolean {
@@ -22,7 +29,7 @@ export const GET: RequestHandler = async ({ params, locals, platform }) => {
 	if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	if (dev && !user.token) {
-		const filePath = join(process.cwd(), 'content', 'posts', `${params.slug}.md`);
+		const filePath = await resolveDraftPath(params.slug);
 		const content = await readFile(filePath, 'utf-8');
 		return json({ content, sha: '' });
 	}
@@ -43,7 +50,7 @@ export const PUT: RequestHandler = async ({ params, request, locals, platform })
 	if (!content) return json({ error: 'content required' }, { status: 400 });
 
 	if (dev && !user.token) {
-		const filePath = join(process.cwd(), 'content', 'posts', `${params.slug}.md`);
+		const filePath = await resolveDraftPath(params.slug);
 		await writeFile(filePath, content, 'utf-8');
 		return json({ sha: '' });
 	}
@@ -63,7 +70,7 @@ export const DELETE: RequestHandler = async ({ params, request, locals, platform
 	if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	if (dev && !user.token) {
-		const filePath = join(process.cwd(), 'content', 'posts', `${params.slug}.md`);
+		const filePath = await resolveDraftPath(params.slug);
 		await unlink(filePath);
 		return json({ ok: true });
 	}

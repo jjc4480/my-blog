@@ -39,18 +39,22 @@ published: ${meta.published}
 }
 
 async function loadLocalDrafts() {
-	const postsDir = join(process.cwd(), 'content', 'posts');
-	const entries = await readdir(postsDir);
 	const drafts: { slug: string; title: string; date: string; category: string; tags: string[]; sha: string }[] = [];
-
-	for (const entry of entries) {
-		if (!entry.endsWith('.md')) continue;
-		const slug = entry.replace(/\.md$/, '');
-		const raw = await readFile(join(postsDir, entry), 'utf-8');
-		const parsed = parseFrontmatter(raw);
-		if (!parsed || parsed.data.published !== false) continue;
-		drafts.push({ slug, title: parsed.data.title, date: parsed.data.date, category: parsed.data.category, tags: parsed.data.tags, sha: '' });
-	}
+	const scan = async (dir: string, requireUnpublished: boolean) => {
+		let entries: string[];
+		try { entries = await readdir(dir); } catch { return; }
+		for (const entry of entries) {
+			if (!entry.endsWith('.md')) continue;
+			const slug = entry.replace(/\.md$/, '');
+			const raw = await readFile(join(dir, entry), 'utf-8');
+			const parsed = parseFrontmatter(raw);
+			if (!parsed) continue;
+			if (requireUnpublished && parsed.data.published !== false) continue;
+			drafts.push({ slug, title: parsed.data.title, date: parsed.data.date, category: parsed.data.category, tags: parsed.data.tags, sha: '' });
+		}
+	};
+	await scan(join(process.cwd(), 'content', 'drafts'), false);
+	await scan(join(process.cwd(), 'content', 'posts'), true);
 	return drafts;
 }
 
