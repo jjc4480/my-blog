@@ -1,3 +1,4 @@
+// @ts-nocheck
 export function rehypeImageOptimize() {
 	return (tree) => {
 		visit(tree, 'element', (node) => {

@@ -3,7 +3,11 @@
 	import { draftFetch } from '$lib/draft/api';
 
 	let { data } = $props();
-	let drafts = $state(data.drafts);
+	let drafts = $state<typeof data.drafts>([]);
+
+	$effect(() => {
+		drafts = data.drafts;
+	});
 
 	async function deleteDraft(slug: string, sha: string) {
 		if (!confirm(`"${slug}" 초안을 삭제하시겠습니까?`)) return;

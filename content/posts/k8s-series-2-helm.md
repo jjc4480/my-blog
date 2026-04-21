@@ -1,5 +1,5 @@
 ---
-title: '백엔드 개발자를 위한 쿠버네티스 (2) — Helm 차트로 앱 패키징'
+title: '백엔드 개발자를 위한 쿠버네티스 (2): Helm 차트로 앱 패키징'
 date: 2026-04-21
 description: 생 YAML의 한계, Chart 구조, values.yaml로 환경 분리까지. 실전에서 Helm을 어떻게 쓰는지.
 tags: [kubernetes, helm, devops, backend, infra]

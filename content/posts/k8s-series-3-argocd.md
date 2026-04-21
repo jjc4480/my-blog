@@ -1,5 +1,5 @@
 ---
-title: '백엔드 개발자를 위한 쿠버네티스 (3) — ArgoCD로 GitOps 자동 배포'
+title: '백엔드 개발자를 위한 쿠버네티스 (3): ArgoCD로 GitOps 자동 배포'
 date: 2026-04-21
 description: helm upgrade를 누가 누를지 정해야 하는 문제. ArgoCD App, sync 정책, 실제 운영 패턴.
 tags: [kubernetes, argocd, gitops, devops, backend, infra]

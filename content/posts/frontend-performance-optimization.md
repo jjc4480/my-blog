@@ -54,6 +54,7 @@ function App() {
 ```
 
 상태를 실제로 쓰는 컴포넌트 안으로 내리면, 그 컴포넌트만 재렌더링된다. 간단한데 효과가 꽤 크다.
+
 ### memo + useCallback 조합
 
 상태를 내릴 수 없는 구조라면 `React.memo`로 막을 수 있다. 근데 주의할 게 있는데, 부모가 렌더링될 때마다 함수가 새로 만들어지면 `memo`가 무력화된다.
@@ -241,6 +242,7 @@ npm install @next/bundle-analyzer
 ```
 
 의외로 `moment.js`(288KB)나 `lodash`(72KB) 전체 import가 큰 비중을 차지하는 경우가 많다. `date-fns`나 `lodash-es`로 바꾸면 수십 KB가 빠진다.
+
 ## 레이아웃 쉬프트
 
 페이지 로드 중에 요소가 갑자기 밀려나는 거. 기사 읽는데 광고가 끼어들면서 버튼이 밀려나는 경험, 다들 있을 거다. 구글 웹 성능 지표 중 하나로, 0.1 이하면 "양호"다.
@@ -308,6 +310,7 @@ function UserProfile() {
 ```
 
 Skeleton이랑 실제 콘텐츠 높이가 다르면 어차피 밀리니까, 크기를 맞춰야 의미가 있다.
+
 ## 이벤트 핸들러
 
 스크롤, 리사이즈, 입력 이벤트는 초당 수십~수백 번 발생한다. 핸들러가 조금이라도 무거우면 UI가 버벅거린다.
@@ -400,6 +403,7 @@ window.addEventListener('scroll', () => {
 ```
 
 `requestAnimationFrame`은 브라우저가 다음 화면을 그리기 직전에 실행된다. `setTimeout(fn, 16)`이랑 비슷해 보이지만, `setTimeout`은 렌더링 타이밍이랑 안 맞아서 프레임이 빠질 수 있다. 애니메이션이나 스크롤 기반 UI에는 `requestAnimationFrame`을 쓰자.
+
 ## CPU vs GPU 렌더링
 
 브라우저가 CSS 변경을 화면에 반영할 때 세 단계를 거친다.
@@ -512,6 +516,7 @@ self.onmessage = (e) => {
 ```
 
 CSS든 Canvas든 결국 같은 얘기다. CPU가 매 프레임 하던 무거운 일을 GPU로 넘기거나 Worker로 빼면, 메인 스레드가 가벼워진다.
+
 ## 체크리스트
 
 | 항목 | 핵심 액션 | 영향 지표 |

@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade';
 	import { goto } from '$app/navigation';
-	import { SearchEngine, type SearchPost } from '$lib/content/search';
+	import { SearchEngine, type SearchData, type SearchPost } from '$lib/content/search';
 	import { formatDateShort } from '$lib/utils';
 
 	let { open = $bindable(false) }: { open?: boolean } = $props();
@@ -13,8 +13,8 @@
 	let focusedIndex = $state(-1);
 	let hasFetchedOnce = $state(false);
 	let debounceTimer: ReturnType<typeof setTimeout>;
-	let inputEl: HTMLInputElement;
-	let modalEl: HTMLDivElement;
+	let inputEl: HTMLInputElement | undefined = $state();
+	let modalEl: HTMLDivElement | undefined = $state();
 
 	const engine = new SearchEngine();
 
@@ -22,7 +22,15 @@
 	const CACHE_KEY = `search-index-${CACHE_VERSION}`;
 	const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-	function loadFromCache(): unknown | null {
+	function isSearchData(data: unknown): data is SearchData {
+		return (
+			!!data &&
+			typeof data === 'object' &&
+			Array.isArray((data as { posts?: unknown }).posts)
+		);
+	}
+
+	function loadFromCache(): SearchData | null {
 		if (!browser) return null;
 		try {
 			const raw = localStorage.getItem(CACHE_KEY);
@@ -30,13 +38,13 @@
 			const parsed = JSON.parse(raw);
 			if (!parsed || typeof parsed !== 'object' || typeof parsed.ts !== 'number') return null;
 			if (Date.now() - parsed.ts > CACHE_TTL) return null;
-			return parsed.data;
+			return isSearchData(parsed.data) ? parsed.data : null;
 		} catch {
 			return null;
 		}
 	}
 
-	function saveToCache(data: unknown) {
+	function saveToCache(data: SearchData) {
 		if (!browser) return;
 		try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
 	}
@@ -47,7 +55,7 @@
 				if (!r.ok) throw new Error('Failed');
 				return r.json();
 			})
-			.then((data) => {
+			.then((data: SearchData) => {
 				engine.load(data);
 				ready = true;
 				saveToCache(data);
@@ -205,6 +213,7 @@
 		role="dialog"
 		aria-modal="true"
 		aria-label="검색"
+		tabindex="-1"
 	>
 		<div class="flex items-center gap-3 border-b border-border/50 px-4 py-3">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -235,7 +244,6 @@
 						onclick={() => navigate(post.slug)}
 						onmouseenter={() => focusedIndex = i}
 						class="flex w-full flex-col gap-1 px-4 py-3 text-left transition-colors {i === focusedIndex ? 'bg-accent/10' : 'hover:bg-secondary/40'}"
-						aria-selected={i === focusedIndex}
 					>
 						<span class="text-sm font-medium text-foreground">{#each splitHighlight(post.title, query) as seg}{#if seg.match}<mark class="bg-primary/20 text-foreground rounded-sm px-0.5">{seg.text}</mark>{:else}{seg.text}{/if}{/each}</span>
 						<span class="text-xs text-muted-foreground">{formatDateShort(post.date)} · {post.category}</span>

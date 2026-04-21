@@ -44,12 +44,14 @@ published: true
 ```js
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { randomUUID } from 'node:crypto'
 
 const s3 = new S3Client({})
 
 export const handler = async (event) => {
   const { filename, contentType } = JSON.parse(event.body)
-  const [REDACTED]
+  const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_')
+  const key = `uploads/${randomUUID()}-${safeFilename}`
 
   const url = await getSignedUrl(
     s3,

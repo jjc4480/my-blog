@@ -1,5 +1,5 @@
 ---
-title: '백엔드 개발자를 위한 쿠버네티스 (1) — 기본 개념과 배포 플로우'
+title: '백엔드 개발자를 위한 쿠버네티스 (1): 기본 개념과 배포 플로우'
 date: 2026-04-21
 description: Pod, Deployment, Service, Ingress가 실제로 어떻게 엮이는지. 그리고 kubectl apply 이후 일어나는 일.
 tags: [kubernetes, k8s, devops, backend, infra]
@@ -109,7 +109,7 @@ spec:
 
 ### ConfigMap과 Secret
 
-둘 다 Pod에 설정값을 주입하는 오브젝트다. ConfigMap은 일반 설정(`LOG_LEVEL` 같은), Secret은 민감 정보(DB 패스워드, API 키) 용도. Secret 값은 base64로 인코딩돼 저장되고, etcd 암호화를 켜면 디스크에서도 암호화 상태를 유지한다.
+둘 다 Pod에 설정값을 주입하는 오브젝트다. ConfigMap은 일반 설정(`LOG_LEVEL` 같은), Secret은 민감 정보(DB 패스워드, API 키) 용도. 단, Secret은 이름만큼 안전하지 않다. 기본값은 base64 인코딩일 뿐이고, etcd 암호화와 RBAC를 제대로 잡아야 비밀 저장소답게 쓸 수 있다.
 
 ```yaml
 apiVersion: v1

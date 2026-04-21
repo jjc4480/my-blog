@@ -63,7 +63,7 @@ export async function createSessionCookie(
 	login: string,
 	ghToken: string,
 	secret: string
-): Promise<{ name: string; value: string; options: Record<string, unknown> }> {
+): Promise<{ name: string; value: string; options: Parameters<Cookies['set']>[2] }> {
 	const { hmacKey, aesKey } = await deriveKeys(secret);
 	const nonce = toBase64Url(crypto.getRandomValues(new Uint8Array(16)));
 	const payload: SessionPayload = {
@@ -121,7 +121,7 @@ export async function getSessionUser(
 export function clearSessionCookie(): {
 	name: string;
 	value: string;
-	options: Record<string, unknown>;
+	options: Parameters<Cookies['set']>[2];
 } {
 	return {
 		name: COOKIE_NAME,

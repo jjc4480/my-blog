@@ -1,3 +1,4 @@
+// @ts-nocheck
 function toSlug(text) {
 	return text
 		.toLowerCase()

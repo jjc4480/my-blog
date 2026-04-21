@@ -7,7 +7,7 @@
 
 	let { data } = $props();
 
-	let sha = $state(data.sha);
+	let sha = $state('');
 	let saving = $state(false);
 	let publishing = $state(false);
 	let status = $state('');
@@ -32,6 +32,7 @@
 	}
 
 	$effect(() => {
+		sha = data.sha;
 		const { fm, body } = parseFrontmatterAndBody(data.content);
 		frontmatter = fm;
 		renderMarkdown(body).then((html) => {

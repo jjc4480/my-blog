@@ -93,7 +93,7 @@
 						theme: isDark ? 'dark' : 'default',
 						fontFamily: 'inherit'
 					});
-					mermaid.run({ nodes: mermaidBlocks });
+					mermaid.run({ nodes: Array.from(mermaidBlocks) as HTMLElement[] });
 				});
 			}
 		});

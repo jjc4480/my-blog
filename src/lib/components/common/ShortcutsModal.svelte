@@ -11,15 +11,20 @@
 </script>
 
 {#if open}
-	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm"
-		onclick={() => open = false}
-		role="dialog"
-		aria-modal="true"
-		aria-label="단축키 도움말"
-		tabindex="-1"
-	>
-		<div class="mx-4 w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-2xl" onclick={(e) => e.stopPropagation()}>
+	<div class="fixed inset-0 z-50 flex items-center justify-center">
+		<button
+			type="button"
+			class="absolute inset-0 bg-background/60 backdrop-blur-sm"
+			aria-label="단축키 도움말 닫기"
+			onclick={() => open = false}
+		></button>
+		<div
+			role="dialog"
+			aria-modal="true"
+			aria-label="단축키 도움말"
+			tabindex="-1"
+			class="relative mx-4 w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-2xl"
+		>
 			<h3 class="mb-4 text-sm font-semibold text-foreground">단축키</h3>
 			<div class="space-y-2 text-sm">
 				{#each shortcuts as { label, macKeys, otherKeys }}

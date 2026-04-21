@@ -36,7 +36,7 @@
 				Link.configure({ openOnClick: false }),
 				Placeholder.configure({ placeholder: '\uBCF8\uBB38\uC744 \uC791\uC131\uD558\uC138\uC694...' }),
 				Image,
-				TableKit.configure({ resizable: false })
+				TableKit.configure({ table: { resizable: false } })
 			],
 			content,
 			editorProps: {

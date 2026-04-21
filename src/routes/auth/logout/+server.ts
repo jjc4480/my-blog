@@ -6,6 +6,6 @@ export const prerender = false;
 
 export const GET: RequestHandler = async ({ cookies }) => {
 	const cleared = clearSessionCookie();
-	cookies.set(cleared.name, cleared.value, cleared.options as Parameters<typeof cookies.set>[2]);
+	cookies.set(cleared.name, cleared.value, cleared.options);
 	redirect(302, '/');
 };

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { SearchEngine, type SearchPost } from '$lib/content/search';
+	import { SearchEngine, type SearchData, type SearchPost } from '$lib/content/search';
 	import SearchInput from '$lib/components/common/SearchInput.svelte';
 	import SEO from '$lib/components/common/SEO.svelte';
 
@@ -15,8 +15,8 @@
 	if (browser) {
 		fetch('/api/search')
 			.then((r) => r.json())
-			.then((data) => {
-				engine.load(data);
+				.then((data: SearchData) => {
+					engine.load(data);
 				ready = true;
 				if (query.trim()) doSearch();
 			});

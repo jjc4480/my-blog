@@ -38,10 +38,10 @@ export const GET: RequestHandler = async ({ url, platform, cookies }) => {
 		}
 
 		const cleared = clearSessionCookie();
-		cookies.set(cleared.name, cleared.value, cleared.options as Parameters<typeof cookies.set>[2]);
+		cookies.set(cleared.name, cleared.value, cleared.options);
 
 		const session = await createSessionCookie(login, accessToken, env.SESSION_SECRET);
-		cookies.set(session.name, session.value, session.options as Parameters<typeof cookies.set>[2]);
+		cookies.set(session.name, session.value, session.options);
 
 		redirect(302, '/');
 	} catch (e: any) {

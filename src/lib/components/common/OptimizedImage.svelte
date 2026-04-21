@@ -11,14 +11,13 @@
 
 	let { src, alt, width = 800, height = 450, sizes = '(max-width: 640px) 100vw, (max-width: 960px) 960px, 1280px', class: className = '', eager = false }: Props = $props();
 
-	const ext = src.lastIndexOf('.');
-	const base = ext > 0 ? src.slice(0, ext) : src;
-	const isOptimized = src.startsWith('/optimized/');
+	const ext = $derived(src.lastIndexOf('.'));
+	const base = $derived(ext > 0 ? src.slice(0, ext) : src);
+	const isOptimized = $derived(src.startsWith('/optimized/'));
 
-	const srcset = isOptimized
+	const srcset = $derived(isOptimized
 		? [640, 960, 1280].map(w => `${base}-${w}w.webp ${w}w`).join(', ')
-		: '';
-	const webpSrc = isOptimized ? `${base}.webp` : '';
+		: '');
 </script>
 
 {#if isOptimized && srcset}

@@ -17,7 +17,7 @@
 	const schema = buildWebSiteSchema();
 </script>
 
-<SEO description={siteConfig.description} canonicalUrl="{siteConfig.url}" />
+<SEO description={siteConfig.description} canonicalUrl={siteConfig.url} />
 <JsonLD {schema} />
 
 <!-- Hero -->

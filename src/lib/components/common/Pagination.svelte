@@ -31,7 +31,7 @@
 </script>
 
 {#if totalPages > 1}
-	<nav class="mt-12 flex items-center justify-center gap-2" role="navigation" aria-label="페이지 네비게이션">
+	<nav class="mt-12 flex items-center justify-center gap-2" aria-label="페이지 네비게이션">
 		{#if currentPage > 1}
 			<a
 				href={pageHref(currentPage - 1)}
