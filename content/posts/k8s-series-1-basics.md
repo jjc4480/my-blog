@@ -9,7 +9,7 @@ seriesOrder: 1
 published: true
 ---
 
-도커로 백엔드 앱을 컨테이너로 말아 배포해본 적이 있다면, 흐름은 익숙할 거다. `docker build`, `docker push`, 그리고 VM에 SSH로 붙어 `docker run`. 서비스 하나일 땐 이걸로 충분하다.
+도커로 백엔드 앱을 컨테이너로 만들어 배포해본 적이 있다면, 흐름은 익숙할 거다. `docker build`, `docker push`, 그리고 VM에 SSH로 붙어 `docker run`. 서비스 하나일 땐 이걸로 충분하다.
 
 문제는 서비스가 늘어나는 시점에서 시작된다. 컨테이너가 죽으면 누가 다시 띄우는가. 트래픽이 늘면 복제본은 어떻게 확장하는가. 이미지만 바꿔 다운타임 없이 교체하고 싶다면. 이 질문들에 매번 셸 스크립트와 systemd 유닛으로 대응하다 보면, 그게 곧 엉성한 자작 오케스트레이터가 된다. 쿠버네티스(Kubernetes, 이하 K8s)는 이 영역을 선언적으로 다루기 위해 만들어졌다.
 
@@ -204,7 +204,7 @@ spec:
 
 `envFrom`으로 ConfigMap과 Secret의 값이 컨테이너 환경변수에 통째로 주입된다. Go 코드에선 `os.Getenv("DB_HOST")`로 읽으면 된다.
 
-PostgreSQL 쪽은 조금 다르다. 상태(데이터)가 있는 컴포넌트는 Deployment 대신 StatefulSet을 쓰고, 데이터 볼륨은 PersistentVolumeClaim으로 연결한다. 운영 환경이라면 K8s 안에 DB를 두지 않고 관리형 서비스(RDS, Cloud SQL)로 분리하는 선택도 흔하다. 이 주제는 독립된 한 편 분량이라 여기선 덮어둔다.
+PostgreSQL 쪽은 조금 다르다. 상태(데이터)가 있는 컴포넌트는 Deployment 대신 StatefulSet을 쓰고, 데이터 볼륨은 PersistentVolumeClaim으로 연결한다. 운영 환경이라면 K8s 안에 DB를 두지 않고 관리형 서비스(RDS, Cloud SQL)로 분리하는 선택도 흔하다. 이 주제는 독립된 한 편 분량이라 여기선 다루지 않는다.
 
 배포는 한 줄이다.
 
