@@ -22,7 +22,7 @@ ${recent.map((p) => `<item>
 <guid isPermaLink="true">${siteConfig.url}/blog/${p.slug}</guid>
 <pubDate>${new Date(p.date).toUTCString()}</pubDate>
 <author>${esc(siteConfig.author.email)} (${esc(siteConfig.author.name)})</author>
-<category>${esc(p.category)}</category>
+${[...new Set([p.category, ...p.tags])].map((c) => `<category>${esc(c)}</category>`).join('\n')}
 </item>`).join('\n')}
 </channel>
 </rss>`;
