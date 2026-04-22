@@ -6,6 +6,7 @@ import { dev } from '$app/environment';
 import { parseFrontmatter } from '$lib/content/frontmatter';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import yaml from 'js-yaml';
 
 
 const SLUG_PATTERN = /^[a-z0-9가-힣](?:[a-z0-9가-힣-]*[a-z0-9가-힣])?$/i;
@@ -25,17 +26,7 @@ function buildFrontmatter(meta: {
 	description: string;
 	published: boolean;
 }): string {
-	const tagsYaml = meta.tags.map((t) => `  - ${t}`).join('\n');
-	return `---
-title: "${meta.title}"
-date: "${meta.date}"
-category: "${meta.category}"
-tags:
-${tagsYaml}
-description: "${meta.description}"
-published: ${meta.published}
----
-`;
+	return `---\n${yaml.dump(meta, { lineWidth: -1 })}---\n`;
 }
 
 async function loadLocalDrafts() {
