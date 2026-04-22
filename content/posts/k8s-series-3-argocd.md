@@ -21,11 +21,11 @@ GitOps의 아이디어는 단순하다. 클러스터의 desired state를 Git에 
 
 ArgoCD는 쿠버네티스에 설치되는 별도 컨트롤러다. 설치 자체도 Helm이나 매니페스트 한 세트를 apply하는 방식이다. 설치되고 나면 웹 UI와 `argocd` CLI 두 가지 인터페이스를 제공하고, 둘 다 내부적으로는 쿠버네티스 API의 커스텀 리소스를 읽고 쓴다.
 
-설치 직후 몇 개의 커스텀 리소스가 새로 생긴다.
+설치 직후 몇 개의 커스텀 리소스(CRD)가 새로 생긴다. Application, AppProject, ApplicationSet 3개가 핵심이다. Git 저장소(Repo)와 대상 클러스터(Cluster) 등록 정보는 CRD가 아니라 `argocd` 네임스페이스의 Kubernetes Secret으로 저장된다.
 
 - Application: 배포할 단위. "이 Git 경로에 있는 매니페스트/차트를, 이 클러스터의 이 네임스페이스에 적용해라"라는 선언
 - AppProject: Application 여러 개를 묶는 프로젝트 단위. 어느 레포, 어느 클러스터, 어느 네임스페이스에 배포해도 되는지 권한을 제한한다
-- Repo, Cluster: ArgoCD가 접근할 Git 저장소와 대상 쿠버네티스 클러스터의 등록 정보
+
 
 동작 원리는 간단하다. ArgoCD controller가 일정 주기로 두 상태를 비교한다. 하나는 Git의 매니페스트(desired state), 다른 하나는 클러스터에 실제로 떠 있는 오브젝트(live state). 차이가 있으면 `OutOfSync`로 표시하고, 설정에 따라 자동 또는 수동으로 sync를 실행한다. sync란 실질적으로 Git의 매니페스트를 클러스터에 apply하는 동작이다.
 

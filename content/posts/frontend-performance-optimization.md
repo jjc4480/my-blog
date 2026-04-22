@@ -241,7 +241,7 @@ npx webpack-bundle-analyzer stats.json
 npm install @next/bundle-analyzer
 ```
 
-의외로 `moment.js`(288KB)나 `lodash`(72KB) 전체 import가 큰 비중을 차지하는 경우가 많다. `date-fns`나 `lodash-es`로 바꾸면 수십 KB가 빠진다.
+의외로 `moment.js`(288KB, minified)나 `lodash`(72KB, minified) 전체 import가 큰 비중을 차지하는 경우가 많다. `date-fns`나 `lodash-es`로 바꾸면 수십 KB가 빠진다.
 
 ## 레이아웃 쉬프트
 

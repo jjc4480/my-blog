@@ -77,6 +77,17 @@ CREATE TABLE documents (
 
 차원은 사용하는 임베딩 모델에 맞춘다. OpenAI `text-embedding-3-small`이면 1536, `text-embedding-3-large`는 3072. 모델을 바꾸면 차원 맞춰 마이그레이션 해야 하니까 초기에 한 번 정해두는 게 편하다.
 
+단, `vector` 타입의 HNSW 인덱스는 최대 2,000차원까지 지원한다. 3072차원 모델(`text-embedding-3-large`)을 쓰면서 HNSW 인덱스를 걸려면 `halfvec` 타입을 써야 한다.
+
+```sql
+-- 3072차원 모델 사용 시
+embedding  halfvec(3072)
+
+-- 인덱스도 halfvec_cosine_ops 사용
+CREATE INDEX ON documents
+USING hnsw (embedding halfvec_cosine_ops);
+```
+
 ### HNSW 인덱스
 
 ```sql
