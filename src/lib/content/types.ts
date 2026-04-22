@@ -10,6 +10,5 @@ export interface Post {
 	series?: string;
 	seriesOrder?: number;
 	slug: string;
-	content: string;
 	readingTime?: number;
 }

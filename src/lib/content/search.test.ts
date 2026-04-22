@@ -9,8 +9,7 @@ describe('buildSearchData', () => {
 		description: 'A test post about Go',
 		tags: ['go', 'graphql'],
 		category: 'engineering',
-		slug: 'test-post',
-		content: ''
+		slug: 'test-post'
 	};
 
 	it('strips markdown from body', () => {

@@ -16,7 +16,7 @@ export async function getPosts(options?: { includeSecret?: boolean }): Promise<P
 			console.warn(`[posts] Invalid frontmatter in ${slug}:`, result.error.issues);
 			continue;
 		}
-		const metadata = result.data as Omit<Post, 'slug' | 'content'>;
+		const metadata = result.data as Omit<Post, 'slug'>;
 
 		if (metadata.published === false) continue;
 		if (metadata.secret && !options?.includeSecret) continue;
@@ -26,7 +26,6 @@ export async function getPosts(options?: { includeSecret?: boolean }): Promise<P
 		posts.push({
 			...metadata,
 			slug,
-			content: '',
 			readingTime: getReadingTime(rawContent)
 		});
 	}
