@@ -1,16 +1,18 @@
 import { redirect, json } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { building, dev } from '$app/environment';
 import { getSessionUser } from '$lib/server/session';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const { pathname } = event.url;
 	const isProtected = pathname.startsWith('/drafts') || pathname.startsWith('/api/drafts');
-	const needsAuth = isProtected || pathname.startsWith('/auth/') || pathname === '/api/me';
 
 	event.locals.user = null;
 
-	if (needsAuth) {
+	// During `vite build` prerender, platform bindings are unavailable and
+	// the Cloudflare adapter throws on any platform.env access. No user is
+	// ever authenticated at build time, so skip the whole env-backed block.
+	if (!building) {
 		const { getEnv } = await import('$lib/server/env');
 		const env = getEnv(event.platform);
 		const secret = env.SESSION_SECRET;

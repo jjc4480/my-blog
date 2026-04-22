@@ -11,21 +11,13 @@
 	import { formatDate } from '$lib/utils';
 
 	let { data } = $props();
-	let isAdmin = $state(false);
-	let authChecked = $state(false);
+	const isAdmin = $derived(data.isAdmin);
 	let seriesOpen = $state(true);
 	const seriesIndex = $derived(
 		data.series && data.seriesPosts?.length
 			? data.seriesPosts.findIndex((p: { slug: string }) => p.slug === data.slug) + 1
 			: 0
 	);
-
-	$effect(() => {
-		fetch('/api/me').then(r => r.json()).then(u => {
-			if (u?.login) isAdmin = true;
-			authChecked = true;
-		}).catch(() => { authChecked = true; });
-	});
 
 	interface TocItem { id: string; text: string; level: number; }
 	let headings: TocItem[] = $state([]);
@@ -161,7 +153,7 @@
 		</div>
 	</header>
 
-	{#if data.secret && authChecked && !isAdmin}
+	{#if data.secret && !isAdmin}
 	<div class="flex flex-col items-center justify-center py-20 text-center">
 		<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground/50 mb-4"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 		<p class="text-lg font-medium text-muted-foreground">비밀글입니다</p>
