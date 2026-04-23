@@ -9,7 +9,8 @@
     "optimize-images": "node scripts/optimize-images.js",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "deploy": "vite build && wrangler pages deploy .svelte-kit/cloudflare --project-name jcjang-blog"
   },
   "devDependencies": {
     "@sveltejs/adapter-cloudflare": "^7.2.8",
