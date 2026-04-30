@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { draftFetch } from '$lib/draft/api';
 
@@ -7,6 +8,44 @@
 
 	$effect(() => {
 		drafts = data.drafts;
+	});
+
+	// 어드민 페이지가 열려 있는 동안 4초 간격으로 /api/drafts 를 다시 fetch.
+	// 수동 dispatch (게시·저장) 직후 별도 새로고침 없이 목록이 갱신되도록.
+	// 탭이 숨겨지면(visibilityState !== 'visible') 폴링을 건너뛴다.
+	$effect(() => {
+		if (!browser) return;
+		const POLL_MS = 4000;
+		let stopped = false;
+		let inFlight = false;
+
+		async function refresh() {
+			if (stopped || inFlight) return;
+			if (document.visibilityState !== 'visible') return;
+			inFlight = true;
+			try {
+				const res = await draftFetch('/api/drafts');
+				if (!res.ok) return;
+				const next = await res.json();
+				if (!stopped) drafts = next;
+			} catch {
+				/* transient — 다음 tick 에서 재시도 */
+			} finally {
+				inFlight = false;
+			}
+		}
+
+		const iv = setInterval(refresh, POLL_MS);
+		const onVisibility = () => {
+			if (document.visibilityState === 'visible') refresh();
+		};
+		document.addEventListener('visibilitychange', onVisibility);
+
+		return () => {
+			stopped = true;
+			clearInterval(iv);
+			document.removeEventListener('visibilitychange', onVisibility);
+		};
 	});
 
 	async function deleteDraft(slug: string, sha: string) {
