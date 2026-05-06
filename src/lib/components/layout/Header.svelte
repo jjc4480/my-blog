@@ -111,6 +111,17 @@
 				{/if}
 			</div>
 		{/if}
+		<div class="mt-auto pt-4 border-t border-border/50">
+			<a
+				href="/rss.xml"
+				class="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/40"
+				aria-label="RSS 피드 구독"
+				title="RSS 피드 구독"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+				<span>RSS 구독</span>
+			</a>
+		</div>
 	</div>
 </aside>
 
@@ -128,6 +139,14 @@
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 			</button>
+			<a
+				href="/rss.xml"
+				class="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
+				aria-label="RSS 피드 구독"
+				title="RSS 피드 구독"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+			</a>
 			<ThemeToggle />
 			<button
 				onclick={() => mobileOpen = !mobileOpen}

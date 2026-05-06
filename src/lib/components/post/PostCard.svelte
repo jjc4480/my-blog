@@ -3,7 +3,12 @@
 	import TagChip from '../common/TagChip.svelte';
 	import { formatDate } from '$lib/utils';
 
+	const VISIBLE_TAGS = 3;
 	let { post }: { post: Post } = $props();
+	let tagsExpanded = $state(false);
+
+	const hiddenCount = $derived(Math.max(0, post.tags.length - VISIBLE_TAGS));
+	const visibleTags = $derived(tagsExpanded ? post.tags : post.tags.slice(0, VISIBLE_TAGS));
 </script>
 
 <article class="group py-6">
@@ -46,11 +51,17 @@
 		</div>
 	</a>
 	<div class="mt-3 flex flex-wrap items-center gap-1.5 {post.thumbnail ? 'sm:pl-40' : ''}">
-		{#each post.tags.slice(0, 3) as tag}
+		{#each visibleTags as tag}
 			<TagChip {tag} href="/tags/{tag}" />
 		{/each}
-		{#if post.tags.length > 3}
-			<span class="text-xs text-muted-foreground">+{post.tags.length - 3}</span>
+		{#if hiddenCount > 0 && !tagsExpanded}
+			<button
+				type="button"
+				onclick={() => (tagsExpanded = true)}
+				class="inline-block rounded-md bg-secondary/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+				aria-label="태그 {hiddenCount}개 더 보기"
+				aria-expanded="false"
+			>+{hiddenCount}</button>
 		{/if}
 	</div>
 </article>

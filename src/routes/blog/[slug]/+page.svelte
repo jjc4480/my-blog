@@ -6,6 +6,8 @@
 	import JsonLD from '$lib/components/common/JsonLD.svelte';
 	import TOC from '$lib/components/post/TOC.svelte';
 	import ReadingProgress from '$lib/components/post/ReadingProgress.svelte';
+	import ShareButtons from '$lib/components/post/ShareButtons.svelte';
+	import RelatedPosts from '$lib/components/post/RelatedPosts.svelte';
 	import { siteConfig } from '$lib/config';
 	import { buildArticleSchema, buildBreadcrumbSchema } from '$lib/seo';
 	import { formatDate } from '$lib/utils';
@@ -17,6 +19,9 @@
 		data.series && data.seriesPosts?.length
 			? data.seriesPosts.findIndex((p: { slug: string }) => p.slug === data.slug) + 1
 			: 0
+	);
+	const seriesProgressPct = $derived(
+		data.seriesPosts?.length ? Math.round((seriesIndex / data.seriesPosts.length) * 100) : 0
 	);
 
 	interface TocItem { id: string; text: string; level: number; }
@@ -91,17 +96,40 @@
 		});
 	});
 
+	const COPY_FAIL_ICON =
+		'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
 	function handleCopyClick(e: MouseEvent) {
 		const target = (e.target as HTMLElement | null)?.closest('[data-copy-btn]') as HTMLButtonElement | null;
 		if (!target) return;
 		const wrapper = target.closest('.code-block-wrapper');
 		const pre = wrapper?.querySelector('pre');
 		const text = pre?.querySelector('code')?.textContent ?? pre?.textContent ?? '';
-		const done = () => {
+
+		const originalIcon = target.innerHTML;
+		const originalLabel = target.getAttribute('aria-label') ?? '코드 복사';
+
+		const onSuccess = () => {
 			target.classList.add('copied');
-			setTimeout(() => target.classList.remove('copied'), 2000);
+			target.setAttribute('aria-label', '코드가 복사되었습니다');
+			setTimeout(() => {
+				target.classList.remove('copied');
+				target.setAttribute('aria-label', originalLabel);
+			}, 2000);
 		};
-		navigator.clipboard.writeText(text).then(done).catch(done);
+
+		const onError = () => {
+			target.classList.add('copy-failed');
+			target.innerHTML = COPY_FAIL_ICON;
+			target.setAttribute('aria-label', '코드 복사 실패');
+			setTimeout(() => {
+				target.classList.remove('copy-failed');
+				target.innerHTML = originalIcon;
+				target.setAttribute('aria-label', originalLabel);
+			}, 2000);
+		};
+
+		navigator.clipboard.writeText(text).then(onSuccess).catch(onError);
 	}
 
 </script>
@@ -176,20 +204,35 @@
 					class="transition-transform duration-200 {seriesOpen ? 'rotate-180' : ''}"
 				><path d="m6 9 6 6 6-6"/></svg>
 			</button>
+			<div class="h-0.5 w-full bg-primary/10" role="progressbar" aria-valuenow={seriesIndex} aria-valuemin="1" aria-valuemax={data.seriesPosts.length} aria-label="시리즈 진행도">
+				<div class="h-full rounded-r-full bg-primary transition-all duration-300" style="width: {seriesProgressPct}%"></div>
+			</div>
 			{#if seriesOpen}
-				<div class="border-t border-border/30 px-4 py-2">
+				<div class="px-4 py-2">
 					<ol class="space-y-0.5">
 						{#each data.seriesPosts as sp, i}
 							{#if sp.slug === data.slug}
-								<li class="flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary">
-									<span class="text-xs text-primary/60">{i + 1}.</span>
-									{sp.title}
+								<li class="flex items-center gap-2 rounded-md border-l-2 border-primary bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary" aria-current="true">
+									<span class="inline-flex h-4 w-4 flex-none items-center justify-center" aria-hidden="true">
+										<span class="h-2 w-2 rounded-full bg-primary"></span>
+									</span>
+									<span class="flex-1">{sp.title}</span>
+									<span class="text-[11px] font-medium text-primary/70 tabular-nums">현재 · {i + 1}/{data.seriesPosts.length}</span>
+								</li>
+							{:else if i + 1 < seriesIndex}
+								<li>
+									<a href="/blog/{sp.slug}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/50">
+										<span class="inline-flex h-4 w-4 flex-none items-center justify-center text-primary/80" aria-label="읽은 글">
+											<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+										</span>
+										<span class="flex-1 line-through decoration-muted-foreground/40">{sp.title}</span>
+									</a>
 								</li>
 							{:else}
 								<li>
-									<a href="/blog/{sp.slug}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
-										<span class="text-xs text-muted-foreground/60">{i + 1}.</span>
-										{sp.title}
+									<a href="/blog/{sp.slug}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/50">
+										<span class="inline-flex h-4 w-4 flex-none items-center justify-center text-[11px] tabular-nums text-muted-foreground/60">{i + 1}</span>
+										<span class="flex-1">{sp.title}</span>
 									</a>
 								</li>
 							{/if}
@@ -228,6 +271,8 @@
 		<Content />
 	</div>
 
+	<ShareButtons title={data.title} url={`${siteConfig.url}/blog/${data.slug}`} />
+
 	<nav class="mt-16 grid gap-4 border-t border-border/50 pt-8 sm:grid-cols-2" aria-label="이전/다음 글">
 		{#if data.prevPost}
 			<a href="/blog/{data.prevPost.slug}" class="group flex flex-col rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/40">
@@ -245,18 +290,7 @@
 		{/if}
 	</nav>
 
-	{#if data.relatedPosts?.length > 0}
-		<section class="mt-12 border-t border-border/50 pt-8">
-			<h2 class="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">관련 글</h2>
-			<div class="grid gap-3 sm:grid-cols-3">
-				{#each data.relatedPosts as rp}
-					<a href="/blog/{rp.slug}" class="group rounded-lg border border-border/50 p-4 transition-colors hover:bg-secondary/40">
-						<span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">{rp.title}</span>
-					</a>
-				{/each}
-			</div>
-		</section>
-	{/if}
+	<RelatedPosts posts={data.relatedPosts} />
 {/if}
 </article>
 
