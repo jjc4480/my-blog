@@ -2,7 +2,7 @@
 title: "TypeScript 6.0과 Project Corsa: 10배 빠른 컴파일러의 기회와 위험"
 date: "2026-04-22"
 description: "TS 6.0 breaking changes 정리, Go 리라이트(Project Corsa)의 배경과 리스크, 실용적 업그레이드 체크리스트까지."
-tags: ["TypeScript", "JavaScript", "Go", "컴파일러"]
+tags: ["TypeScript", "JavaScript", "Go", "compiler"]
 category: "Engineering"
 published: true
 ---
