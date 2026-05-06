@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser, version } from '$app/environment';
 	import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade';
 	import { goto } from '$app/navigation';
 	import { SearchEngine, type SearchData, type SearchPost } from '$lib/content/search';
@@ -18,7 +18,8 @@
 
 	const engine = new SearchEngine();
 
-	const CACHE_VERSION = 'v1';
+	const CACHE_VERSION = version;
+	const MIN_QUERY_LENGTH = 2;
 	const CACHE_KEY = `search-index-${CACHE_VERSION}`;
 	const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -92,7 +93,12 @@
 
 	function onInput() {
 		clearTimeout(debounceTimer);
-		if (!query.trim()) { results = []; focusedIndex = -1; return; }
+		const trimmed = query.trim();
+		if (trimmed.length < MIN_QUERY_LENGTH) {
+			results = [];
+			focusedIndex = -1;
+			return;
+		}
 		debounceTimer = setTimeout(doSearch, 150);
 	}
 
@@ -235,6 +241,8 @@
 				<p class="px-4 py-6 text-center text-sm text-destructive">{error}</p>
 			{:else if !ready}
 				<p class="px-4 py-6 text-center text-sm text-muted-foreground">로딩 중...</p>
+			{:else if query.trim().length > 0 && query.trim().length < MIN_QUERY_LENGTH}
+				<p class="px-4 py-6 text-center text-sm text-muted-foreground">{MIN_QUERY_LENGTH}글자 이상 입력해주세요.</p>
 			{:else if query.trim() && results.length === 0}
 				<p class="px-4 py-6 text-center text-sm text-muted-foreground">검색 결과가 없습니다.</p>
 			{:else}

@@ -1,12 +1,12 @@
-import { getPosts, getTags } from '$lib/content/posts';
+import { getTags } from '$lib/content/posts';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-	const posts = await getPosts();
-	const tags = getTags(posts);
+export const load: PageServerLoad = async ({ parent }) => {
+	const { allPosts } = await parent();
+	const tags = getTags(allPosts);
 	const tagCounts = tags.map((tag) => ({
 		name: tag,
-		count: posts.filter((p) => p.tags.includes(tag)).length
+		count: allPosts.filter((p) => p.tags.includes(tag)).length
 	}));
 
 	return { tags: tagCounts };

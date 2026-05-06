@@ -24,6 +24,7 @@
 <section class="mb-12">
 	<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{siteConfig.title}</h1>
 	<p class="mt-3 text-sm text-muted-foreground">{siteConfig.description}</p>
+	<p class="mt-2 text-xs text-muted-foreground/80 tabular-nums">총 {data.totalCount}개 포스트</p>
 </section>
 
 <!-- Filter -->

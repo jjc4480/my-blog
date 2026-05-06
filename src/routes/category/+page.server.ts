@@ -1,12 +1,12 @@
-import { getPosts, getCategories } from '$lib/content/posts';
+import { getCategories } from '$lib/content/posts';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-	const posts = await getPosts();
-	const categories = getCategories(posts);
+export const load: PageServerLoad = async ({ parent }) => {
+	const { allPosts } = await parent();
+	const categories = getCategories(allPosts);
 	const categoryCounts = categories.map((cat) => ({
 		name: cat,
-		count: posts.filter((p) => p.category === cat).length
+		count: allPosts.filter((p) => p.category === cat).length
 	}));
 
 	return { categories: categoryCounts };

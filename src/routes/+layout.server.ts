@@ -3,6 +3,6 @@ import { getPosts, getTags } from '$lib/content/posts';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const isAdmin = !!locals.user;
-	const posts = await getPosts({ includeSecret: isAdmin });
-	return { tags: getTags(posts), isAdmin };
+	const allPosts = await getPosts({ includeSecret: isAdmin });
+	return { allPosts, tags: getTags(allPosts), isAdmin };
 };

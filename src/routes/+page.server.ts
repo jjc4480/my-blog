@@ -1,11 +1,11 @@
-import { getPosts, getCategories, getTags } from '$lib/content/posts';
+import { getCategories, getTags } from '$lib/content/posts';
 import { siteConfig } from '$lib/config';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url, locals }) => {
-	const isAdmin = !!locals.user;
-	const allPosts = await getPosts({ includeSecret: isAdmin });
-	const page = Number(url.searchParams.get('page') ?? '1');
+export const load: PageServerLoad = async ({ url, parent }) => {
+	const { allPosts } = await parent();
+	const rawPage = Number(url.searchParams.get('page') ?? '1');
+	const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
 	const category = url.searchParams.get('category') ?? '';
 	const tag = url.searchParams.get('tag') ?? '';
 
@@ -22,6 +22,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		posts: paginatedPosts,
 		currentPage: safePage,
 		totalPages,
+		totalCount: allPosts.length,
 		categories: getCategories(allPosts),
 		tags: getTags(allPosts),
 		activeCategory: category,

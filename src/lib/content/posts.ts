@@ -38,5 +38,15 @@ export function getCategories(posts: Post[]): string[] {
 }
 
 export function getTags(posts: Post[]): string[] {
-	return [...new Set(posts.flatMap((p) => p.tags))].sort();
+	const freq = new Map<string, number>();
+	for (const post of posts) {
+		for (const tag of post.tags) {
+			const key = tag.trim().toLowerCase();
+			if (!key) continue;
+			freq.set(key, (freq.get(key) ?? 0) + 1);
+		}
+	}
+	return [...freq.entries()]
+		.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+		.map(([tag]) => tag);
 }

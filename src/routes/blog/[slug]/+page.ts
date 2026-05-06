@@ -55,7 +55,7 @@ export const load: PageLoad = async ({ params }) => {
 	}
 
 	// Related posts — share 1+ tag, sorted by shared count desc then date desc.
-	const currentTags = (metadata.tags as string[]) ?? [];
+	const currentTags = ((metadata.tags as string[] | undefined) ?? []).map((t) => t.trim().toLowerCase()).filter(Boolean);
 	const relatedPosts = publicPosts
 		.filter((p) => p.slug !== params.slug)
 		.map((p) => ({
@@ -72,8 +72,8 @@ export const load: PageLoad = async ({ params }) => {
 		title: metadata.title as string,
 		date: metadata.date as string,
 		description: metadata.description as string,
-		tags: metadata.tags as string[],
-		category: metadata.category as string,
+		tags: (((metadata.tags as string[] | undefined) ?? []).map((t) => t.trim().toLowerCase()).filter(Boolean)),
+		category: ((metadata.category as string | undefined) ?? '').trim().toLowerCase(),
 		secret: ((metadata.secret as boolean | undefined) ?? false),
 		slug: params.slug,
 		readingTime,
