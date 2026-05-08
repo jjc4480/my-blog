@@ -1,44 +1,81 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { SearchEngine, type SearchData, type SearchPost } from '$lib/content/search';
 	import SearchInput from '$lib/components/common/SearchInput.svelte';
 	import SEO from '$lib/components/common/SEO.svelte';
+	import { formatDate } from '$lib/utils';
 
-	let query = $state('');
+	let query = $state(page.url.searchParams.get('q') ?? '');
 	let results: SearchPost[] = $state([]);
 	let ready = $state(false);
-	let debounceTimer: ReturnType<typeof setTimeout>;
+	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+	let urlTimer: ReturnType<typeof setTimeout> | undefined;
 
 	const engine = new SearchEngine();
 
-	// Load search index on client init
-	if (browser) {
-		fetch('/api/search')
-			.then((r) => r.json())
-				.then((data: SearchData) => {
-					engine.load(data);
-				ready = true;
-				if (query.trim()) doSearch();
-			});
-	}
-
 	function doSearch() {
-		results = engine.search(query);
+		const trimmed = query.trim();
+		results = ready && trimmed ? engine.search(trimmed) : [];
 	}
 
-	function onInput() {
-		clearTimeout(debounceTimer);
-		if (!query.trim()) {
-			results = [];
-			return;
-		}
+	function syncUrl() {
+		if (!browser) return;
+		const trimmed = query.trim();
+		const target = trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : '/search';
+		const current = `${page.url.pathname}${page.url.search}`;
+		if (current === target) return;
+
+		void goto(target, {
+			replaceState: true,
+			keepFocus: true,
+			noScroll: true
+		});
+	}
+
+	function scheduleSearch() {
+		if (debounceTimer) clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(doSearch, 150);
 	}
 
-	function formatDate(dateStr: string): string {
-		const d = new Date(dateStr);
-		return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+	function scheduleUrlSync() {
+		if (urlTimer) clearTimeout(urlTimer);
+		urlTimer = setTimeout(syncUrl, 150);
 	}
+
+	function onInput() {
+		scheduleUrlSync();
+		scheduleSearch();
+	}
+
+	$effect(() => {
+		const urlQuery = page.url.searchParams.get('q') ?? '';
+		if (urlQuery !== query) {
+			query = urlQuery;
+			doSearch();
+		}
+	});
+
+	$effect(() => {
+		if (!browser) return;
+
+		let cancelled = false;
+		fetch('/api/search')
+			.then((r) => r.json())
+			.then((data: SearchData) => {
+				if (cancelled) return;
+				engine.load(data);
+				ready = true;
+				doSearch();
+			});
+
+		return () => {
+			cancelled = true;
+			if (debounceTimer) clearTimeout(debounceTimer);
+			if (urlTimer) clearTimeout(urlTimer);
+		};
+	});
 </script>
 
 <SEO title="검색" description="포스트 검색" noindex={true} />
