@@ -14,8 +14,20 @@ const shiki = await createHighlighter({
 const COPY_ICON =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
 
-function wrapWithCopy(html) {
-	return `<div class="code-block-wrapper relative group">${html}<button type="button" class="copy-btn" aria-label="코드 복사" data-copy-btn>${COPY_ICON}</button></div>`;
+function escapeHtmlAttribute(value) {
+	return value
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
+}
+
+function wrapWithCopy(html, lang) {
+	const normalizedLang = lang?.trim().toLowerCase();
+	const label = normalizedLang && normalizedLang !== 'text'
+		? `<span class="code-lang-label" aria-label="코드 언어: ${escapeHtmlAttribute(normalizedLang)}">${escapeHtmlAttribute(normalizedLang)}</span>`
+		: '';
+	return `<div class="code-block-wrapper relative group">${label}${html}<button type="button" class="copy-btn" aria-label="코드 복사" data-copy-btn>${COPY_ICON}</button></div>`;
 }
 
 function escapeForTemplate(html) {
@@ -43,7 +55,7 @@ const config = {
 							dark: 'github-dark'
 						}
 					});
-					const wrapped = wrapWithCopy(html);
+					const wrapped = wrapWithCopy(html, lang || 'text');
 					return `{@html \`${escapeForTemplate(wrapped)}\`}`;
 				}
 			}

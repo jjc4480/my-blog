@@ -411,6 +411,29 @@
 	height: auto;
 }
 
+/* Code block language label */
+.code-block-wrapper .code-lang-label {
+	position: absolute;
+	top: 0.625rem;
+	right: 3rem;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	height: 1.5rem;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	background: color-mix(in oklab, var(--background) 88%, transparent);
+	padding: 0 0.5rem;
+	font-family: var(--font-mono);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: 0.02em;
+	color: var(--muted-foreground);
+	pointer-events: none;
+	backdrop-filter: blur(4px);
+}
+
 /* Code block copy button */
 .code-block-wrapper .copy-btn {
 	position: absolute;
